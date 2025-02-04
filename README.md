@@ -12,7 +12,7 @@
 }
 
 DEFAULT_OPTIONS = {
-	width_win = 0,						-- the width of the window, if = 0 is calculated
+	width_win = 0,				-- the width of the window, if = 0 is calculated
 	color_cursor_line = "#2b2b2b",		-- the color of the line highlight with the cursor
 	color_cursor_mane_line = "#2b2b2b",	-- the color of the line highlight in the main editor
 	color_light_path = "#ada085",	   	-- the color of the path selection from the file name
