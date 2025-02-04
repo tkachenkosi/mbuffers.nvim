@@ -1,4 +1,4 @@
-### A malistic and high-performance buffers manager for the NeoVim editor.
+### A minimalistic and highly-efficient buffer manager for the Neovim editor.
 ---
 #### Installation and Usage:
 ```
