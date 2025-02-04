@@ -10,7 +10,7 @@ local original_lines = {}
 -- для вычисления ширины окна
 local max_len_buffer = 0
 
-local	config = {
+M.config = {
 	-- #112233
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
 	color_cursor_line = "#2b2b2b",				-- цвет подсветки строки с курсором
@@ -79,15 +79,15 @@ local function create_main_window()
     -- Устанавливаем текст в буфере
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
 
-    vim.cmd("highlight HighlightPath guifg=" .. config.color_light_path)
+    vim.cmd("highlight HighlightPath guifg=" .. M.config.color_light_path)
 		for i, line in ipairs(original_lines) do
 			highlight_path_in_filename(line, i)
 		end
 
     -- Создаём основное окно
     local width = 0
-		if config.width_win > 0 then
-			width = math.min(vim.o.columns - 10, config.width_win )
+		if M.config.width_win > 0 then
+			width = math.min(vim.o.columns - 10, M.config.width_win )
 		else
 			width = math.min(vim.o.columns - 10,  max_len_buffer + 10)
 		end
@@ -107,19 +107,19 @@ local function create_main_window()
     -- Открываем основное окно
     main_win = vim.api.nvim_open_win(main_buf, true, opts)
 		vim.cmd("stopi")
-		vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
+		vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
 		vim.api.nvim_win_set_option(0, "cursorline", true)
 
     -- Устанавливаем режим "только для чтения"
     vim.api.nvim_buf_set_option(main_buf, "readonly", true)
     vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
 
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('my.module').close_mbuffers()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('my.module').close_mbuffers()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('my.module').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('my.module').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('my.module').select_filter_up()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('my.module').select_buffer()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
 end
 
 -- перехват движения вверх
@@ -147,8 +147,8 @@ local function create_filter_window()
 
     -- Создаём окно для ввода фильтра
     local width = 0
-		if config.width_win > 0 then
-			width = math.min(vim.o.columns - 10, config.width_win )
+		if M.config.width_win > 0 then
+			width = math.min(vim.o.columns - 10, M.config.width_win )
 		else
 			width = math.min(vim.o.columns - 10,  max_len_buffer + 10)
 		end
@@ -167,7 +167,7 @@ local function create_filter_window()
     -- Открываем окно для ввода фильтра
     filter_win = vim.api.nvim_open_win(filter_buf, true, opts)
 
-    vim.cmd("highlight RedText guibg=" .. config.color_light_filter)
+    vim.cmd("highlight RedText guibg=" .. M.config.color_light_filter)
     vim.api.nvim_buf_add_highlight(filter_buf, -1, "RedText", 0, 0, -1)
 
     -- Переключаемся в режим редактирования
@@ -175,9 +175,9 @@ local function create_filter_window()
 		vim.cmd("star")
 
     -- Устанавливаем клавишу Esc для закрытия окна
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('my.module').close_mbuffers()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('my.module').select_main_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('my.module').select_main_window()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
 
     -- Устанавливаем обработчик ввода текста
     -- local buf_number = vim.api.nvim_buf_get_number(filter_buf) -- Номер буфера
@@ -250,12 +250,12 @@ function M.close_mbuffers()
 		vim.api.nvim_buf_delete(filter_buf, { force = true })
     vim.api.nvim_win_close(main_win, true)
 		vim.api.nvim_buf_delete(main_buf, { force = true })
-		vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_mane_line })
+		vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
 		vim.cmd("stopi")
 end
 
 function M.setup(options)
-	config = vim.fbl_deep_extend("force", config, options or {})
+	M.config = vim.fbl_deep_extend("force", M.config, options or {})
 
 	vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
 end
