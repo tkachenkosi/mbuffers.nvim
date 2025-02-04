@@ -255,7 +255,7 @@ function M.close_mbuffers()
 end
 
 function M.setup(options)
-	M.config = vim.fbl_deep_extend("force", M.config, options or {})
+	M.config = vim.tbl_deep_extend("force", M.config, options or {})
 
 	vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
 end
