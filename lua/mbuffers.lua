@@ -215,6 +215,7 @@ function M.select_buffer()
     -- Переключаемся на выбранный буфер
     -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
+    vim.api.nvim_set_current_win(current_win)
 end
 
 -- Функция для переключение на окно с буферами 
