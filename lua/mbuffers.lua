@@ -188,7 +188,7 @@ local function create_filter_window()
     -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
     -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
 
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", function() require('mbuffers').close_mbuffers(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", function() require('mbuffers').close_mbuffers(); end)
     vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", function() require('mbuffers').select_main_window(); end, { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", function() require('mbuffers').select_main_window(); end, { noremap = true, silent = true })
 
