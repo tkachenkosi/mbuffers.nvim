@@ -116,12 +116,19 @@ local function create_main_window()
     vim.api.nvim_buf_set_option(main_buf, "readonly", true)
     vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
 
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
+
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", function() require('mbuffers').close_mbuffers(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "q", function() require('mbuffers').close_mbuffers(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "f", function() require('mbuffers').select_filter_window(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", function() require('mbuffers').select_filter_window(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", function() require('mbuffers').select_filter_up(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", function() require('mbuffers').select_buffer(); end, { noremap = true, silent = true })
 end
 
 -- перехват движения вверх
@@ -177,9 +184,13 @@ local function create_filter_window()
 		vim.cmd("star")
 
     -- Устанавливаем клавишу Esc для закрытия окна
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close_mbuffers()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
+
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", function() require('mbuffers').close_mbuffers(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", function() require('mbuffers').select_main_window(); end, { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", function() require('mbuffers').select_main_window(); end, { noremap = true, silent = true })
 
     -- Устанавливаем обработчик ввода текста
     -- local buf_number = vim.api.nvim_buf_get_number(filter_buf) -- Номер буфера
