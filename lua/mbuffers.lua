@@ -9,6 +9,8 @@ local filter_buf, filter_win
 local original_lines = {}
 -- для вычисления ширины окна
 local max_len_buffer = 0
+-- окно откуда был запуск и в котором нужно поменять содержимое
+local current_win
 
 M.config = {
 	-- #112233
@@ -211,7 +213,8 @@ function M.select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
 		M.close_mbuffers()
     -- Переключаемся на выбранный буфер
-    vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
+    -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
+		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
 end
 
 -- Функция для переключение на окно с буферами 
@@ -256,12 +259,12 @@ end
 
 function M.setup(options)
 	M.config = vim.tbl_deep_extend("force", M.config, options or {})
-
 	vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
 end
 
 -- Функция для запуска менеджера буферов
 function M.start()
+	current_win = vim.api.nvim_get_current_win()
 	original_lines = get_open_buffers()
 
   -- Создаём окно ввода фильтра
