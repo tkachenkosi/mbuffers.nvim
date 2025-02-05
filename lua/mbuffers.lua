@@ -96,7 +96,7 @@ local function create_main_window()
     local col = math.floor((vim.o.columns - width))
 
     local opts = {
-        relative = "win",
+        relative = "editor",
         width = width,
         height = height,
         row = 1,
