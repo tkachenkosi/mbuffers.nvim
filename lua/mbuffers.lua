@@ -11,6 +11,8 @@ local original_lines = {}
 local max_len_buffer = 0
 -- окно откуда был запуск и в котором нужно поменять содержимое
 local current_win
+-- домашняя директория
+M.home_dir = ""
 
 M.config = {
 	-- #112233
@@ -43,7 +45,10 @@ local function get_open_buffers()
 
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 				if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
-            local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1) -- Получаем имя файла
+						-- получаем короткое имя файла
+            local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1) -- уберем путь к текущиму каталогу
+            file_name = string.gsub(vim.api.nvim_buf_get_name(buf), M.home_dir, "", 1) -- дополнительн уберем домашние директорию
+
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
 						local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
 						max_len_buffer = math.max(max_len_buffer, string.len(file_name))
@@ -118,7 +123,7 @@ local function create_main_window()
     vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
 end
 
@@ -258,7 +263,8 @@ end
 
 function M.setup(options)
 	M.config = vim.tbl_deep_extend("force", M.config, options or {})
-	vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
+	M.home_dir = tostring(os.getenv("HOME"))
+	-- vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
 end
 
 -- Функция для запуска менеджера буферов
