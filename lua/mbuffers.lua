@@ -45,9 +45,9 @@ local function get_open_buffers()
 
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 				if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
-						-- получаем короткое имя файла
-            local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1) -- уберем путь к текущиму каталогу
-            file_name = string.gsub(vim.api.nvim_buf_get_name(buf), M.home_dir, "", 1) -- дополнительн уберем домашние директорию
+            -- local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1)
+						-- уберем путь к текущиму каталогу, дополнительн уберем домашние директорию
+            local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), M.home_dir, "", 1)
 
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
 						local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
