@@ -28,5 +28,4 @@ CR, Down		- go to the buffer list window
 
 Command:
 
-|:StartMbuffers|
-
+|lua require("mbuffers").start()|

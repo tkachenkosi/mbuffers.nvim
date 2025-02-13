@@ -21,11 +21,17 @@ M.config = {
 	color_cursor_mane_line = "#2b2b2b",		-- цвет подсветки строки в основном редакторе
 	color_light_path = "#ada085",					-- цвет выделения пути из имени файла
 	color_light_filter = "#224466",				-- цвет строки ввода фильтра
+	color_light_curr = "#f1b841",					-- цвет цвет номера для текущего буфера
 }
 
 
 -- Функция для подсветки пути в имени файла
 local function highlight_path_in_filename(line, line_number)
+
+		if line:find("%", 1, true) then
+			vim.api.nvim_buf_add_highlight(main_buf, -1, "HighlightPathCurr", line_number - 1, 2, 4)
+		end
+
     local last_slash_pos = line:find("/[^/]*$")
     if not last_slash_pos then
         return
@@ -85,6 +91,7 @@ local function create_main_window()
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
 
     vim.cmd("highlight HighlightPath guifg=" .. M.config.color_light_path)
+		vim.cmd("highlight HighlightPathCurr guifg="..M.config.color_light_curr)
 		for i, line in ipairs(original_lines) do
 			highlight_path_in_filename(line, i)
 		end
