@@ -29,7 +29,7 @@ M.config = {
 local function highlight_path_in_filename(line, line_number)
 
 		if line:find("%", 1, true) then
-			vim.api.nvim_buf_add_highlight(main_buf, -1, "HighlightPathCurr", line_number - 1, 6, 7)
+			vim.api.nvim_buf_add_highlight(main_buf, -1, "HighlightPathCurr", line_number - 1, 5, 7)
 		end
 
     local last_slash_pos = line:find("/[^/]*$")
