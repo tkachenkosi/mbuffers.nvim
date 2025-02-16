@@ -147,7 +147,7 @@ end
 local function get_dir_progect()
 	local dir_progect = string.gsub(vim.fn.getcwd(), M.home_dir, "~", 1)
 	-- уточним максимальную длину всех строк
-	max_len_buffer = math.max(max_len_buffer, string.len(dir_progect) - 8)
+	max_len_buffer = math.max(max_len_buffer, string.len(dir_progect) - 6)
 	return " " .. dir_progect .. "/* "
 end
 
