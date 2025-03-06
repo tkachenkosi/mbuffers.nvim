@@ -1,6 +1,6 @@
 local M = {}
 
-vim.g.mbuffer_windows = nil
+vim.g.mm_windows = nil
 
 -- Основной буфер и окно
 local main_buf, main_win
@@ -260,7 +260,7 @@ function M.select_filter_window()
 end
 
 function M.close()
-		vim.g.mbuffer_windows = nil
+		vim.g.mm_windows = nil
     -- Закрываем окна для фильтра и буфероф
     vim.api.nvim_win_close(filter_win, true)
 		vim.api.nvim_buf_delete(filter_buf, { force = true })
@@ -278,10 +278,10 @@ end
 
 -- Функция для запуска менеджера буферов
 function M.start()
-	if vim.g.mbuffer_windows ~= nil then
+	if vim.g.mm_windows ~= nil then
 		return
 	end
-	vim.g.mbuffer_windows = 1
+	vim.g.mm_windows = 1
 	current_win = vim.api.nvim_get_current_win()
 	get_open_buffers()
 
