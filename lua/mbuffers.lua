@@ -1,5 +1,6 @@
--- Модуль для живого поиска
 local M = {}
+
+vim.g.mbuffer_windows = nil
 
 -- Основной буфер и окно
 local main_buf, main_win
@@ -276,6 +277,9 @@ end
 
 -- Функция для запуска менеджера буферов
 function M.start()
+	if vim.g.mbuffer_windows ~= nil then
+		print("mbuffer ~= nil")
+	end
 	current_win = vim.api.nvim_get_current_win()
 	get_open_buffers()
 
