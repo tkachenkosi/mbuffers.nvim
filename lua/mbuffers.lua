@@ -279,7 +279,6 @@ end
 -- Функция для запуска менеджера буферов
 function M.start()
 	if vim.g.mbuffer_windows ~= nil then
-		-- print("mbuffer ~= nil")
 		return
 	end
 	vim.g.mbuffer_windows = 1
