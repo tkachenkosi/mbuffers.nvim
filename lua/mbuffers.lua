@@ -164,6 +164,10 @@ end
 function M.n_number_pressed_find_line(key)
 	search_number_string = search_number_string .. key
 
+	if #search_number_string > 3 then
+		search_number_string = key
+	end
+
 	-- Ищем строку в буфере
   local num_line = vim.fn.search(search_number_string, 'n')
 
@@ -172,13 +176,6 @@ function M.n_number_pressed_find_line(key)
 		-- Перемещаем курсор
     vim.api.nvim_win_set_cursor(0, { num_line, 0 })
   end
-
-	if #search_number_string > 3 then
-		search_number_string = ""
-		search_number_string = search_number_string .. key
-		-- search_number_string = key
-	end
-	print(search_number_string, #search_number_string)
 end
 
 -- перехват движения вверх
