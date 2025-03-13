@@ -174,8 +174,11 @@ function M.n_number_pressed_find_line(key)
   end
 
 	if #search_number_string > 3 then
-		search_number_string = key
+		search_number_string = ""
+		search_number_string = search_number_string .. key
+		-- search_number_string = key
 	end
+	print(search_number_string, #search_number_string)
 end
 
 -- перехват движения вверх
