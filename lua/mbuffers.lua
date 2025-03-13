@@ -141,7 +141,7 @@ local function create_main_window()
 
 		-- Привязка цифровых клавиш (0-9)
 		for i = 0, 9 do
-			vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').n_number_pressed_find_line(i)<CR>", { noremap = true, silent = true })
+			vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').n_number_pressed_find_line([['..i..']])<CR>", { noremap = true, silent = true })
 		end
 end
 
