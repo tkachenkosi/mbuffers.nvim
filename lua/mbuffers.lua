@@ -147,6 +147,7 @@ end
 
 -- переход на первую строку
 function M.select_first_line()
+	search_number_string = ""
 	vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
@@ -154,6 +155,7 @@ end
 function M.select_last_line()
 	-- Получаем количество строк в текущем буфере
 	-- Перемещаем курсор на последнюю строку
+	search_number_string = ""
 	vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
 end
 
@@ -163,16 +165,16 @@ function M.n_number_pressed_find_line(key)
 	search_number_string = search_number_string .. key
 
 	-- Ищем строку в буфере
-  local line = vim.fn.search(search_number_string, 'n')
+  local num_line = vim.fn.search(search_number_string, 'n')
 
   -- Если строка найдена, перемещаем курсор на неё
-  if line > 0 then
-    vim.api.nvim_win_set_cursor(0, { line, 0 })  -- Перемещаем курсор
+  if num_line > 0 then
+		-- Перемещаем курсор
+    vim.api.nvim_win_set_cursor(0, { num_line, 0 })
   end
 
-	-- print(search_number_string,line)
 	if #search_number_string > 3 then
-		search_number_string = ""
+		search_number_string = key
 	end
 end
 
