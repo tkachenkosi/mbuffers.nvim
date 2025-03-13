@@ -12,6 +12,8 @@ local original_lines = {}
 local max_len_buffer = 0
 -- окно откуда был запуск и в котором нужно поменять содержимое
 local current_win
+-- поиск строки по номеру буфера 
+local search_number_string = ""
 -- домашняя директория
 M.home_dir = ""
 
@@ -131,16 +133,58 @@ local function create_main_window()
     vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Home>", "<Cmd>lua require('mbuffers').select_first_line()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<End>", "<Cmd>lua require('mbuffers').select_last_line()<CR>", { noremap = true, silent = true })
     -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
+    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_up()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
+
+		-- Привязка цифровых клавиш (0-9)
+		for i = 0, 9 do
+			vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').find_line(i)<CR>", { noremap = true, silent = true })
+		end
+end
+
+-- переход на первую строку
+function M.select_first_line()
+	vim.api.nvim_win_set_cursor(0, { 1, 0 })
+end
+
+-- переход  на последнию строку
+function M.select_last_line()
+	-- Получаем количество строк в текущем буфере
+	-- Перемещаем курсор на последнюю строку
+	vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
+end
+
+-- поиск строки по номеру буфера
+-- обрабатывает цифровые клавиши
+function M.n_number_pressed_find_line(key)
+	search_number_string = search_number_string .. key
+
+	-- Ищем строку в буфере
+  local line = vim.fn.search(search_number_string, 'n')
+
+  -- Если строка найдена, перемещаем курсор на неё
+  if line > 0 then
+    vim.api.nvim_win_set_cursor(0, { line, 0 })  -- Перемещаем курсор
+  end
+
+	if #search_number_string > 3 then
+		search_number_string = ""
+	end
 end
 
 -- перехват движения вверх
-function M.select_filter_up()
+function M.select_up()
 	vim.cmd('norm! k')
 	if vim.api.nvim__buf_stats(0).current_lnum == 1 then
 		-- переходим в окно фильта когда достигнута первая строчка списка
-		M.select_filter_window()
+		-- M.select_filter_window()
+
+		-- Получаем количество строк в текущем буфере
+		-- Перемещаем курсор на последнюю строку
+		vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
 	end
 end
 
