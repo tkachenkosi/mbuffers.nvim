@@ -170,6 +170,7 @@ function M.n_number_pressed_find_line(key)
     vim.api.nvim_win_set_cursor(0, { line, 0 })  -- Перемещаем курсор
   end
 
+	print(search_number_string,line)
 	if #search_number_string > 3 then
 		search_number_string = ""
 	end
