@@ -136,12 +136,12 @@ local function create_main_window()
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<Home>", "<Cmd>lua require('mbuffers').select_first_line()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<End>", "<Cmd>lua require('mbuffers').select_last_line()<CR>", { noremap = true, silent = true })
     -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_up()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_up()<CR>", { noremap = true, silent = true })
     vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
 
 		-- Привязка цифровых клавиш (0-9)
 		for i = 0, 9 do
-			vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').find_line(i)<CR>", { noremap = true, silent = true })
+			vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').n_number_pressed_find_line(i)<CR>", { noremap = true, silent = true })
 		end
 end
 
@@ -178,14 +178,14 @@ end
 -- перехват движения вверх
 function M.select_up()
 	vim.cmd('norm! k')
-	if vim.api.nvim__buf_stats(0).current_lnum == 1 then
+	-- if vim.api.nvim__buf_stats(0).current_lnum == 1 then
 		-- переходим в окно фильта когда достигнута первая строчка списка
 		-- M.select_filter_window()
 
 		-- Получаем количество строк в текущем буфере
 		-- Перемещаем курсор на последнюю строку
-		vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
-	end
+		-- vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
+	-- end
 end
 
 -- возвращает путь к каталогу проекта
@@ -326,6 +326,7 @@ function M.start()
 		return
 	end
 	vim.g.mm_windows = 1
+	search_number_string = ""
 	current_win = vim.api.nvim_get_current_win()
 	get_open_buffers()
 
