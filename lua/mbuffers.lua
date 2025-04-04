@@ -124,7 +124,7 @@ local function create_main_window()
     main_win = vim.api.nvim_open_win(main_buf, true, opts)
 		vim.cmd("stopi")
 		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
-		vim.api.nvim_win_set_option(0, "Cursorline", true)
+		vim.api.nvim_win_set_option(0, "CursorLine", true)
 
     -- Устанавливаем режим "только для чтения"
     vim.api.nvim_buf_set_option(main_buf, "readonly", true)
