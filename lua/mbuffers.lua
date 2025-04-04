@@ -124,7 +124,7 @@ local function create_main_window()
     main_win = vim.api.nvim_open_win(main_buf, true, opts)
 		vim.cmd("stopi")
 		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
-		-- vim.api.nvim_win_set_option(0, "Cursorline", true)
+		vim.api.nvim_win_set_option(0, "Cursorline", true)
 
     -- Устанавливаем режим "только для чтения"
     vim.api.nvim_buf_set_option(main_buf, "readonly", true)
@@ -280,7 +280,7 @@ end
 -- Функция для переключение на окно с буферами 
 function M.select_main_window()
     -- Возвращаемся в основной буфер
-		vim.api.nvim_win_set_option(0, "cursorline", false)
+		-- vim.api.nvim_win_set_option(0, "cursorline", false)
     vim.api.nvim_set_current_win(main_win)
 		vim.api.nvim_win_set_option(0, "cursorline", true)
     -- Устанавливаем режим "только для чтения"
@@ -303,7 +303,7 @@ function M.select_filter_window()
 
 		vim.api.nvim_win_set_option(0, "cursorline", false)
     vim.api.nvim_set_current_win(filter_win)
-		vim.api.nvim_win_set_option(0, "cursorline", true)
+		-- vim.api.nvim_win_set_option(0, "cursorline", true)
 		vim.cmd("star")
 end
 
