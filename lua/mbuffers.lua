@@ -21,7 +21,6 @@ M.config = {
 	-- #112233
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
 	-- color_cursor_line = "#2b2b2b",				-- цвет подсветки строки с курсором
-	-- color_cursor_mane_line = "#2b2b2b",		-- цвет подсветки строки в основном редакторе
 	-- color_cursor_mane_line = "",		-- цвет подсветки строки в основном редакторе
 	color_light_path = "#ada085",					-- цвет выделения пути из имени файла
 	color_light_filter = "#224466",				-- цвет строки ввода фильтра
@@ -280,7 +279,6 @@ end
 -- Функция для переключение на окно с буферами 
 function M.select_main_window()
     -- Возвращаемся в основной буфер
-		-- vim.api.nvim_win_set_option(0, "cursorline", false)
     vim.api.nvim_set_current_win(main_win)
 		vim.api.nvim_win_set_option(0, "cursorline", true)
     -- Устанавливаем режим "только для чтения"
@@ -290,7 +288,7 @@ function M.select_main_window()
 end
 
 function M.select_filter_window()
-    -- Возвращаемся в основной буфер
+    -- в буфер фильтра
 
     -- Убираем режим "только для чтения"
     vim.api.nvim_buf_set_option(main_buf, "readonly", false)
@@ -303,7 +301,6 @@ function M.select_filter_window()
 
 		vim.api.nvim_win_set_option(0, "cursorline", false)
     vim.api.nvim_set_current_win(filter_win)
-		-- vim.api.nvim_win_set_option(0, "cursorline", true)
 		vim.cmd("star")
 end
 
