@@ -20,9 +20,9 @@ M.home_dir = ""
 M.config = {
 	-- #112233
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
-	color_cursor_line = "#333333",				-- цвет подсветки строки с курсором
+	-- color_cursor_line = "#2b2b2b",				-- цвет подсветки строки с курсором
 	-- color_cursor_mane_line = "#2b2b2b",		-- цвет подсветки строки в основном редакторе
-	color_cursor_mane_line = "",		-- цвет подсветки строки в основном редакторе
+	-- color_cursor_mane_line = "",		-- цвет подсветки строки в основном редакторе
 	color_light_path = "#ada085",					-- цвет выделения пути из имени файла
 	color_light_filter = "#224466",				-- цвет строки ввода фильтра
 	color_light_curr = "#f1b841",					-- цвет цвет номера для текущего буфера
@@ -123,8 +123,8 @@ local function create_main_window()
     -- Открываем основное окно
     main_win = vim.api.nvim_open_win(main_buf, true, opts)
 		vim.cmd("stopi")
-		vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
-		vim.api.nvim_win_set_option(0, "cursorline", true)
+		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
+		-- vim.api.nvim_win_set_option(0, "Cursorline", true)
 
     -- Устанавливаем режим "только для чтения"
     vim.api.nvim_buf_set_option(main_buf, "readonly", true)
@@ -314,7 +314,7 @@ function M.close()
 		vim.api.nvim_buf_delete(filter_buf, { force = true })
     vim.api.nvim_win_close(main_win, true)
 		vim.api.nvim_buf_delete(main_buf, { force = true })
-		vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
+		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
 		vim.cmd("stopi")
 end
 
@@ -322,10 +322,10 @@ function M.setup(options)
 	M.config = vim.tbl_deep_extend("force", M.config, options or {})
 
 	-- получение цвета фона текущец строки
-	local hl = vim.api.nvim_get_hl(0, { name = 'CursorLine' })
-	if hl.bg then
-		M.config.color_cursor_mane_line = hl.bg
-	end
+	-- local hl = vim.api.nvim_get_hl(0, { name = 'CursorLine' })
+	-- if hl.bg then
+	-- 	M.config.color_cursor_mane_line = hl.bg
+	-- end
 
 	M.home_dir = tostring(os.getenv("HOME"))
 	-- vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
