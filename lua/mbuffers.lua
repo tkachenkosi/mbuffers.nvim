@@ -98,7 +98,7 @@ local function highlight_path_in_filename(line, line_number)
     end
 
     -- Добавляем подсветку с помощью vim.highlight
-    vim.api.nvim_buf_add_highlight(main_buf, -1, "HighlightPath", line_number - 1, 8, last_slash_pos)
+    vim.api.nvim_buf_add_highlight(main_buf, -1, "MyHighlightPath", line_number - 1, 8, last_slash_pos)
 end
 
 -- Функция для выбора буфера
