@@ -295,9 +295,9 @@ local function create_filter_window()
 
 		local opts = { noremap = true, silent = true, buffer = filter_buf }
     -- Устанавливаем клавишу Esc для закрытия окна
-		vim.keymap.set("n", "<Esc>", function() close() end, opts)
-		vim.keymap.set("n", "<CR>", function() select_main_window() end, opts)
-		vim.keymap.set("n", "<Down>", function() select_main_window() end, opts)
+		vim.keymap.set("i", "<Esc>", function() close() end, opts)
+		vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
+		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
     -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
     -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
     -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
