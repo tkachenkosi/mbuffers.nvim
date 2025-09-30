@@ -74,6 +74,16 @@ local function select_up()
 	-- end
 end
 
+local function close()
+		vim.g.mm_windows = nil
+    -- Закрываем окна для фильтра и буфероф
+    vim.api.nvim_win_close(filter_win, true)
+		vim.api.nvim_buf_delete(filter_buf, { force = true })
+    vim.api.nvim_win_close(main_win, true)
+		vim.api.nvim_buf_delete(main_buf, { force = true })
+		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
+		vim.cmd("stopi")
+end
 
 -- Функция для подсветки пути в имени файла
 local function highlight_path_in_filename(line, line_number)
@@ -94,7 +104,7 @@ end
 -- Функция для выбора буфера
 local function select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
-		M.close()
+		close()
     -- Переключаемся на выбранный буфер
     -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
@@ -127,17 +137,6 @@ local function select_filter_window()
 		vim.api.nvim_win_set_option(0, "cursorline", false)
     vim.api.nvim_set_current_win(filter_win)
 		vim.cmd("star")
-end
-
-local function close()
-		vim.g.mm_windows = nil
-    -- Закрываем окна для фильтра и буфероф
-    vim.api.nvim_win_close(filter_win, true)
-		vim.api.nvim_buf_delete(filter_buf, { force = true })
-    vim.api.nvim_win_close(main_win, true)
-		vim.api.nvim_buf_delete(main_buf, { force = true })
-		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
-		vim.cmd("stopi")
 end
 
 -- Функция для получения списка открытых буферов с номерами и атрибутами
