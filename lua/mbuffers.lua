@@ -28,6 +28,53 @@ M.config = {
 }
 
 
+-- переход на первую строку
+local function select_first_line()
+	search_number_string = ""
+	vim.api.nvim_win_set_cursor(0, { 1, 0 })
+end
+
+-- переход  на последнию строку
+local function select_last_line()
+	-- Получаем количество строк в текущем буфере
+	-- Перемещаем курсор на последнюю строку
+	search_number_string = ""
+	vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
+end
+
+-- поиск строки по номеру буфера
+-- обрабатывает цифровые клавиши
+local function n_number_pressed_find_line(key)
+	search_number_string = search_number_string .. key
+
+	if #search_number_string > 3 then
+		search_number_string = key
+	end
+
+	-- Ищем строку в буфере
+  local num_line = vim.fn.search(search_number_string, 'n')
+
+  -- Если строка найдена, перемещаем курсор на неё
+  if num_line > 0 then
+		-- Перемещаем курсор
+    vim.api.nvim_win_set_cursor(0, { num_line, 0 })
+  end
+end
+
+-- перехват движения вверх
+local function select_up()
+	vim.cmd('norm! k')
+	-- if vim.api.nvim__buf_stats(0).current_lnum == 1 then
+		-- переходим в окно фильта когда достигнута первая строчка списка
+		-- M.select_filter_window()
+
+		-- Получаем количество строк в текущем буфере
+		-- Перемещаем курсор на последнюю строку
+		-- vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
+	-- end
+end
+
+
 -- Функция для подсветки пути в имени файла
 local function highlight_path_in_filename(line, line_number)
 
@@ -44,6 +91,54 @@ local function highlight_path_in_filename(line, line_number)
     vim.api.nvim_buf_add_highlight(main_buf, -1, "HighlightPath", line_number - 1, 8, last_slash_pos)
 end
 
+-- Функция для выбора буфера
+local function select_buffer()
+		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
+		M.close()
+    -- Переключаемся на выбранный буфер
+    -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
+		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
+    vim.api.nvim_set_current_win(current_win)
+end
+
+-- Функция для переключение на окно с буферами 
+local function select_main_window()
+    -- Возвращаемся в основной буфер
+    vim.api.nvim_set_current_win(main_win)
+		vim.api.nvim_win_set_option(0, "cursorline", true)
+    -- Устанавливаем режим "только для чтения"
+    vim.api.nvim_buf_set_option(main_buf, "readonly", true)
+    vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
+		vim.cmd("stopi")
+end
+
+local function select_filter_window()
+    -- в буфер фильтра
+
+    -- Убираем режим "только для чтения"
+    vim.api.nvim_buf_set_option(main_buf, "readonly", false)
+    vim.api.nvim_buf_set_option(main_buf, "modifiable", true)
+
+		-- очищаем поле ввода фильта если там находится путь к папке проекта (* не допустима в имени файла)
+		if table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), ""):find("*", 1, true) then
+			vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {})
+		end
+
+		vim.api.nvim_win_set_option(0, "cursorline", false)
+    vim.api.nvim_set_current_win(filter_win)
+		vim.cmd("star")
+end
+
+local function close()
+		vim.g.mm_windows = nil
+    -- Закрываем окна для фильтра и буфероф
+    vim.api.nvim_win_close(filter_win, true)
+		vim.api.nvim_buf_delete(filter_buf, { force = true })
+    vim.api.nvim_win_close(main_win, true)
+		vim.api.nvim_buf_delete(main_buf, { force = true })
+		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
+		vim.cmd("stopi")
+end
 
 -- Функция для получения списка открытых буферов с номерами и атрибутами
 local function get_open_buffers()
@@ -125,70 +220,35 @@ local function create_main_window()
 		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
 		vim.api.nvim_win_set_option(0, "cursorline", true)
 
+
+		local opts = { noremap = true, silent = true, buffer = main_buf }
     -- Устанавливаем режим "только для чтения"
     vim.api.nvim_buf_set_option(main_buf, "readonly", true)
     vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
 
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<Home>", "<Cmd>lua require('mbuffers').select_first_line()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<End>", "<Cmd>lua require('mbuffers').select_last_line()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_up()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
+		vim.keymap.set("n", "<Esc>", function() close() end, opts)
+		vim.keymap.set("n", "q", function() close() end, opts)
+		vim.keymap.set("n", "f", function() select_filter_window() end, opts)
+		vim.keymap.set("n", "<c-Up>", function() select_filter_window() end, opts)
+		vim.keymap.set("n", "<Home>", function() select_first_line() end, opts)
+		vim.keymap.set("n", "<End>", function() select_last_line() end, opts)
+		vim.keymap.set("n", "<CR>", function() select_buffer() end, opts)
+
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Home>", "<Cmd>lua require('mbuffers').select_first_line()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<End>", "<Cmd>lua require('mbuffers').select_last_line()<CR>", { noremap = true, silent = true })
+    -- -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
+    -- -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_up()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
 
 		-- Привязка цифровых клавиш (0-9)
 		for i = 0, 9 do
-			vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').n_number_pressed_find_line('"..i.."')<CR>", { noremap = true, silent = true })
+			vim.keymap.set("n", tostring(i), function() n_number_pressed_find_line(i) end, opts)
+			-- vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').n_number_pressed_find_line('"..i.."')<CR>", { noremap = true, silent = true })
 		end
-end
-
--- переход на первую строку
-function M.select_first_line()
-	search_number_string = ""
-	vim.api.nvim_win_set_cursor(0, { 1, 0 })
-end
-
--- переход  на последнию строку
-function M.select_last_line()
-	-- Получаем количество строк в текущем буфере
-	-- Перемещаем курсор на последнюю строку
-	search_number_string = ""
-	vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
-end
-
--- поиск строки по номеру буфера
--- обрабатывает цифровые клавиши
-function M.n_number_pressed_find_line(key)
-	search_number_string = search_number_string .. key
-
-	if #search_number_string > 3 then
-		search_number_string = key
-	end
-
-	-- Ищем строку в буфере
-  local num_line = vim.fn.search(search_number_string, 'n')
-
-  -- Если строка найдена, перемещаем курсор на неё
-  if num_line > 0 then
-		-- Перемещаем курсор
-    vim.api.nvim_win_set_cursor(0, { num_line, 0 })
-  end
-end
-
--- перехват движения вверх
-function M.select_up()
-	vim.cmd('norm! k')
-	-- if vim.api.nvim__buf_stats(0).current_lnum == 1 then
-		-- переходим в окно фильта когда достигнута первая строчка списка
-		-- M.select_filter_window()
-
-		-- Получаем количество строк в текущем буфере
-		-- Перемещаем курсор на последнюю строку
-		-- vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
-	-- end
 end
 
 -- возвращает путь к каталогу проекта
@@ -234,10 +294,14 @@ local function create_filter_window()
     -- vim.api.nvim_command("startinsert")
 		vim.cmd("star")
 
+		local opts = { noremap = true, silent = true, buffer = filter_buf }
     -- Устанавливаем клавишу Esc для закрытия окна
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
-    vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
+		vim.keymap.set("n", "<Esc>", function() close() end, opts)
+		vim.keymap.set("n", "<CR>", function() select_main_window() end, opts)
+		vim.keymap.set("n", "<Down>", function() select_main_window() end, opts)
+    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
+    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
 
     -- Устанавливаем обработчик ввода текста
     -- local buf_number = vim.api.nvim_buf_get_number(filter_buf) -- Номер буфера
@@ -266,54 +330,6 @@ local function create_filter_window()
 end
 
 
--- Функция для выбора буфера
-function M.select_buffer()
-		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
-		M.close()
-    -- Переключаемся на выбранный буфер
-    -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
-		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
-    vim.api.nvim_set_current_win(current_win)
-end
-
--- Функция для переключение на окно с буферами 
-function M.select_main_window()
-    -- Возвращаемся в основной буфер
-    vim.api.nvim_set_current_win(main_win)
-		vim.api.nvim_win_set_option(0, "cursorline", true)
-    -- Устанавливаем режим "только для чтения"
-    vim.api.nvim_buf_set_option(main_buf, "readonly", true)
-    vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
-		vim.cmd("stopi")
-end
-
-function M.select_filter_window()
-    -- в буфер фильтра
-
-    -- Убираем режим "только для чтения"
-    vim.api.nvim_buf_set_option(main_buf, "readonly", false)
-    vim.api.nvim_buf_set_option(main_buf, "modifiable", true)
-
-		-- очищаем поле ввода фильта если там находится путь к папке проекта (* не допустима в имени файла)
-		if table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), ""):find("*", 1, true) then
-			vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {})
-		end
-
-		vim.api.nvim_win_set_option(0, "cursorline", false)
-    vim.api.nvim_set_current_win(filter_win)
-		vim.cmd("star")
-end
-
-function M.close()
-		vim.g.mm_windows = nil
-    -- Закрываем окна для фильтра и буфероф
-    vim.api.nvim_win_close(filter_win, true)
-		vim.api.nvim_buf_delete(filter_buf, { force = true })
-    vim.api.nvim_win_close(main_win, true)
-		vim.api.nvim_buf_delete(main_buf, { force = true })
-		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
-		vim.cmd("stopi")
-end
 
 function M.setup(options)
 	M.config = vim.tbl_deep_extend("force", M.config, options or {})

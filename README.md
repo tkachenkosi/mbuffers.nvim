@@ -6,6 +6,9 @@ vim.keymap.set({'n', 'i'}, '<F12>', function() require('mbuffers').start(); end)
 vim.keymap.set('n', '<leader><F12>', function() require('msession').start(); end)
 
 
+Setting up for Lazy:
+In the plugins/mbuffers.lua file, we add the commands:
+
 {
 "tkachenkosi/mbuffers.nvim",
 config = function()
