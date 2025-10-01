@@ -298,8 +298,15 @@ local function create_filter_window()
     -- Открываем окно для ввода фильтра
     filter_win = vim.api.nvim_open_win(filter_buf, true, opts)
 
-    vim.cmd("highlight RedText guibg=" .. M.config.color_light_filter)
-    vim.api.nvim_buf_add_highlight(filter_buf, -1, "RedText", 0, 0, -1)
+    -- vim.cmd("highlight MyRedText guibg=" .. M.config.color_light_filter)
+		-- устанавливаем hl
+		vim.api.nvim_set_hl(0, "MyRedText", {
+			bg = M.config.color_light_filter,      -- GUI цвет
+			ctermfg = 180,       -- Терминальный цвет
+			default = true,   -- наследовать отсутствующие атрибуты
+		})
+
+    vim.api.nvim_buf_add_highlight(filter_buf, ns, "MyRedText", 0, 0, -1)
 
     -- Переключаемся в режим редактирования
     -- vim.api.nvim_command("startinsert")
