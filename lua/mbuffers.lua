@@ -64,8 +64,10 @@ local function n_number_pressed_find_line(key)
 end
 
 -- перехват движения вверх
-local function select_up()
-	vim.cmd('norm! k')
+-- local function select_up()
+	-- vim.cmd('norm! k')
+-- end
+
 	-- if vim.api.nvim__buf_stats(0).current_lnum == 1 then
 		-- переходим в окно фильта когда достигнута первая строчка списка
 		-- M.select_filter_window()
@@ -74,7 +76,7 @@ local function select_up()
 		-- Перемещаем курсор на последнюю строку
 		-- vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
 	-- end
-end
+-- end
 
 local function close()
 		vim.g.mm_windows = nil
