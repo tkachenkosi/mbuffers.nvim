@@ -216,7 +216,7 @@ local function create_main_window()
     local height = math.min(vim.o.lines - 4, vim.api.nvim_buf_line_count(main_buf) + 1)
     local col = math.floor((vim.o.columns - width))
 
-    local opts = {
+    local wopts = {
         relative = "editor",
         width = width,
         height = height,
@@ -226,7 +226,7 @@ local function create_main_window()
     }
 
     -- Открываем основное окно
-    main_win = vim.api.nvim_open_win(main_buf, true, opts)
+    main_win = vim.api.nvim_open_win(main_buf, true, wopts)
 		vim.cmd("stopi")
 		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
 		vim.api.nvim_win_set_option(0, "cursorline", true)
@@ -286,7 +286,7 @@ local function create_filter_window()
     local height = 1
     local col = math.floor((vim.o.columns - width) )
 
-    local opts = {
+    local wopts = {
         relative = "editor",
         width = width,
         height = height,
@@ -296,7 +296,7 @@ local function create_filter_window()
     }
 
     -- Открываем окно для ввода фильтра
-    filter_win = vim.api.nvim_open_win(filter_buf, true, opts)
+    filter_win = vim.api.nvim_open_win(filter_buf, true, wopts)
 
     -- vim.cmd("highlight MyRedText guibg=" .. M.config.color_light_filter)
 		-- устанавливаем hl
@@ -306,6 +306,7 @@ local function create_filter_window()
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
 
+		ns = vim.api.nvim_create_namespace("file_paths_highlights")
     vim.api.nvim_buf_add_highlight(filter_buf, ns, "MyRedText", 0, 0, -1)
 
     -- Переключаемся в режим редактирования
