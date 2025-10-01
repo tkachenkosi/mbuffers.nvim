@@ -199,11 +199,11 @@ local function create_main_window()
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
 
+		ns = vim.api.nvim_create_namespace("file_paths_highlights")
+
 		for i, line in ipairs(original_lines) do
 			highlight_path_in_filename(line, i)
 		end
-
-		ns = vim.api.nvim_create_namespace("file_paths_highlights")
 
     -- Создаём основное окно
     local width = 0
