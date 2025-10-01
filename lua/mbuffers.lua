@@ -15,9 +15,9 @@ local current_win
 -- поиск строки по номеру буфера 
 local search_number_string = ""
 -- домашняя директория
-M.home_dir = ""
+local home_dir = ""
 
-M.config = {
+local config = {
 	-- #112233
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
 	-- color_cursor_line = "#2b2b2b",				-- цвет подсветки строки с курсором
@@ -83,7 +83,7 @@ local function close()
 		vim.api.nvim_buf_delete(filter_buf, { force = true })
     vim.api.nvim_win_close(main_win, true)
 		vim.api.nvim_buf_delete(main_buf, { force = true })
-		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
+		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_mane_line })
 		vim.cmd("stopi")
 
 		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
@@ -156,7 +156,7 @@ local function get_open_buffers()
 				if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
             -- local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1)
 						-- уберем путь к текущиму каталогу, дополнительн уберем домашние директорию
-            local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), M.home_dir, "", 1)
+            local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), home_dir, "", 1)
 
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
 						local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
@@ -198,7 +198,7 @@ local function create_main_window()
 
 		-- устанавливаем hl
 		vim.api.nvim_set_hl(0, "MyHighlightPathCurr", {
-			fg = M.config.color_light_curr,      -- GUI цвет
+			fg = config.color_light_curr,      -- GUI цвет
 			ctermfg = 180,       -- Терминальный цвет
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
@@ -211,8 +211,8 @@ local function create_main_window()
 
     -- Создаём основное окно
     local width = 0
-		if M.config.width_win > 0 then
-			width = math.min(vim.o.columns - 10, M.config.width_win )
+		if config.width_win > 0 then
+			width = math.min(vim.o.columns - 10, config.width_win )
 		else
 			width = math.min(vim.o.columns - 10,  max_len_buffer + 10)
 		end
@@ -232,7 +232,7 @@ local function create_main_window()
     -- Открываем основное окно
     main_win = vim.api.nvim_open_win(main_buf, true, wopts)
 		vim.cmd("stopi")
-		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_line })
+		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
 		vim.api.nvim_win_set_option(0, "cursorline", true)
 
 
@@ -268,7 +268,7 @@ end
 
 -- возвращает путь к каталогу проекта
 local function get_dir_progect()
-	local dir_progect = string.gsub(vim.fn.getcwd(), M.home_dir, "~", 1)
+	local dir_progect = string.gsub(vim.fn.getcwd(), home_dir, "~", 1)
 	-- уточним максимальную длину всех строк
 	max_len_buffer = math.max(max_len_buffer, string.len(dir_progect) - 6)
 	return " " .. dir_progect .. "/* "
@@ -282,8 +282,8 @@ local function create_filter_window()
 
     -- Создаём окно для ввода фильтра
     local width = 0
-		if M.config.width_win > 0 then
-			width = math.min(vim.o.columns - 10, M.config.width_win )
+		if config.width_win > 0 then
+			width = math.min(vim.o.columns - 10, config.width_win )
 		else
 			width = math.min(vim.o.columns - 10,  max_len_buffer + 10)
 		end
@@ -305,7 +305,7 @@ local function create_filter_window()
     -- vim.cmd("highlight MyRedText guibg=" .. M.config.color_light_filter)
 		-- устанавливаем hl
 		vim.api.nvim_set_hl(0, "MyRedText", {
-			bg = M.config.color_light_filter,      -- GUI цвет
+			bg = config.color_light_filter,      -- GUI цвет
 			ctermfg = 180,       -- Терминальный цвет
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
@@ -355,7 +355,7 @@ end
 
 
 function M.setup(options)
-	M.config = vim.tbl_deep_extend("force", M.config, options or {})
+	config = vim.tbl_deep_extend("force", config, options or {})
 
 	-- получение цвета фона текущец строки
 	-- local hl = vim.api.nvim_get_hl(0, { name = 'CursorLine' })
@@ -363,7 +363,7 @@ function M.setup(options)
 	-- 	M.config.color_cursor_mane_line = hl.bg
 	-- end
 
-	M.home_dir = tostring(os.getenv("HOME"))
+	home_dir = tostring(os.getenv("HOME"))
 	-- vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
 end
 
