@@ -85,6 +85,9 @@ local function close()
 		vim.api.nvim_buf_delete(main_buf, { force = true })
 		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = M.config.color_cursor_mane_line })
 		vim.cmd("stopi")
+
+		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
+    vim.api.nvim_set_current_win(current_win)
 end
 
 -- Функция для подсветки пути в имени файла
@@ -110,6 +113,7 @@ local function select_buffer()
     -- Переключаемся на выбранный буфер
     -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
+		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
     vim.api.nvim_set_current_win(current_win)
 end
 
