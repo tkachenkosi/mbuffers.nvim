@@ -27,6 +27,8 @@ M.config = {
 	color_light_curr = "#f1b841",					-- цвет цвет номера для текущего буфера
 }
 
+-- Создаем namespace для хайлайтов
+local ns
 
 -- переход на первую строку
 local function select_first_line()
@@ -89,7 +91,7 @@ end
 local function highlight_path_in_filename(line, line_number)
 
 		if line:find("%", 1, true) then
-			vim.api.nvim_buf_add_highlight(main_buf, -1, "HighlightPathCurr", line_number - 1, 5, 7)
+			vim.api.nvim_buf_add_highlight(main_buf, ns, "MyHighlightPathCurr", line_number - 1, 5, 7)
 		end
 
     local last_slash_pos = line:find("/[^/]*$")
@@ -97,8 +99,8 @@ local function highlight_path_in_filename(line, line_number)
         return
     end
 
-    -- Добавляем подсветку с помощью vim.highlight
-    vim.api.nvim_buf_add_highlight(main_buf, -1, "MyHighlightPath", line_number - 1, 8, last_slash_pos)
+    -- Добавляем подсветку с помощью vim.highlight (эта hl определена в malpha.nvim )
+    vim.api.nvim_buf_add_highlight(main_buf, ns, "MyHighlightPath", line_number - 1, 8, last_slash_pos)
 end
 
 -- Функция для выбора буфера
@@ -187,11 +189,21 @@ local function create_main_window()
     -- Устанавливаем текст в буфере
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
 
-    vim.cmd("highlight HighlightPath guifg=" .. M.config.color_light_path)
-		vim.cmd("highlight HighlightPathCurr guifg="..M.config.color_light_curr)
+    -- vim.cmd("highlight HighlightPath guifg=" .. M.config.color_light_path)
+		-- vim.cmd("highlight HighlightPathCurr guifg="..M.config.color_light_curr)
+
+		-- устанавливаем hl
+		vim.api.nvim_set_hl(0, "MyHighlightPathCurr", {
+			fg = M.config.color_light_curr,      -- GUI цвет
+			ctermfg = 180,       -- Терминальный цвет
+			default = true,   -- наследовать отсутствующие атрибуты
+		})
+
 		for i, line in ipairs(original_lines) do
 			highlight_path_in_filename(line, i)
 		end
+
+		ns = vim.api.nvim_create_namespace("file_paths_highlights")
 
     -- Создаём основное окно
     local width = 0
