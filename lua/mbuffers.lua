@@ -78,35 +78,39 @@ end
 	-- end
 -- end
 
+
+local function safe_close()
+	vim.g.mm_windows = nil
+
+	-- ВАЖНО: отключаем обработчики перед закрытием
+	if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
+			pcall(vim.api.nvim_buf_detach, filter_buf)
+	end
+
+	-- Закрываем окна для фильтра и буфероф
+	if filter_win and vim.api.nvim_win_is_valid(filter_win) then
+		vim.api.nvim_win_close(filter_win, true)
+	end
+	if main_win and vim.api.nvim_win_is_valid(main_win) then
+		vim.api.nvim_win_close(main_win, true)
+	end
+
+	-- Удаляем буферы с задержкой 10 mc (после закрытия окон)
+	-- vim.defer_fn(function()
+	-- 	if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
+	-- 		vim.api.nvim_buf_delete(filter_buf, { force = true })
+	-- 	end
+	-- 	if main_buf and vim.api.nvim_buf_is_valid(main_buf) then
+	-- 		vim.api.nvim_buf_delete(main_buf, { force = true })
+	-- 	end
+	-- end, 10)
+
+	-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_mane_line })
+	vim.cmd("stopi")
+end
+
 local function close()
-		vim.g.mm_windows = nil
-
-		-- ВАЖНО: отключаем обработчики перед закрытием
-    if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
-        pcall(vim.api.nvim_buf_detach, filter_buf)
-    end
-
-    -- Закрываем окна для фильтра и буфероф
-		if filter_win and vim.api.nvim_win_is_valid(filter_win) then
-			vim.api.nvim_win_close(filter_win, true)
-		end
-		if main_win and vim.api.nvim_win_is_valid(main_win) then
-			vim.api.nvim_win_close(main_win, true)
-		end
-
-		-- Удаляем буферы с задержкой (после закрытия окон)
-		vim.defer_fn(function()
-			if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
-				vim.api.nvim_buf_delete(filter_buf, { force = true })
-			end
-			if main_buf and vim.api.nvim_buf_is_valid(main_buf) then
-				vim.api.nvim_buf_delete(main_buf, { force = true })
-			end
-		end, 10)
-
-		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_mane_line })
-		vim.cmd("stopi")
-
+		safe_close()
 		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
 		if current_win and vim.api.nvim_win_is_valid(current_win) then
 			vim.api.nvim_set_current_win(current_win)
@@ -132,12 +136,14 @@ end
 -- Функция для выбора буфера
 local function select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
-		close()
+		safe_close()
     -- Переключаемся на выбранный буфер
     -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
 		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
-    vim.api.nvim_set_current_win(current_win)
+		if current_win and vim.api.nvim_win_is_valid(current_win) then
+			vim.api.nvim_set_current_win(current_win)
+		end
 end
 
 -- Функция для переключение на окно с буферами 
@@ -260,13 +266,29 @@ local function create_main_window()
         row = 1,
         col = col,
         style = "minimal",
+				focusable = true,
+        zindex = 100,
+        border = "none",
     }
 
     -- Открываем основное окно
     main_win = vim.api.nvim_open_win(main_buf, true, wopts)
-		vim.cmd("stopi")
-		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
-		vim.api.nvim_win_set_option(0, "cursorline", true)
+
+		-- НОВЫЙ СТИЛЬ настройки окна
+    vim.wo[main_win] = {
+        cursorline = true,
+        winblend = 0,
+        winhighlight = "Normal:NormalFloat,CursorLine:Visual",
+        wrap = false,
+        number = false,
+        relativenumber = false,
+        signcolumn = "no",
+        colorcolumn = "",
+    }
+
+		-- vim.cmd("stopi")
+		-- -- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
+		-- vim.api.nvim_win_set_option(0, "cursorline", true)
 
 
 		local opts = { noremap = true, silent = true, buffer = main_buf }
