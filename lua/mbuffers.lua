@@ -368,6 +368,7 @@ local function create_filter_window()
     -- Открываем окно для ввода фильтра
     filter_win = vim.api.nvim_open_win(filter_buf, true, wopts)
 
+    vim.wo[filter_win].cursorline = false
     vim.wo[filter_win].winblend = 0
     vim.wo[filter_win].winhighlight = "Normal:Search" -- используем встроенные hl-группы
 
