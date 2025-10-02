@@ -221,7 +221,7 @@ local function create_main_window()
 			modifiable = true,
 			textwidth = 0,
 			filetype = "text",
-			undolevels = -1
+			-- undolevels = -1
 		}
 
 
@@ -321,7 +321,7 @@ local function create_filter_window()
 			modifiable = true,
 			textwidth = 0,
 			filetype = "text",
-			undolevels = -1
+			-- undolevels = -1
 		}
 
 		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {get_dir_progect()})
