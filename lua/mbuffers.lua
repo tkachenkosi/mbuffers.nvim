@@ -150,7 +150,8 @@ end
 local function select_main_window()
     -- Возвращаемся в основной буфер
     vim.api.nvim_set_current_win(main_win)
-		vim.api.nvim_win_set_option(0, "cursorline", true)
+		-- vim.api.nvim_win_set_option(0, "cursorline", true)
+    vim.wo[main_win].cursorline = true
     -- Устанавливаем режим "только для чтения"
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
@@ -170,7 +171,8 @@ local function select_filter_window()
 			vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {})
 		end
 
-		vim.api.nvim_win_set_option(0, "cursorline", false)
+		-- vim.api.nvim_win_set_option(0, "cursorline", false)
+    vim.wo[main_win].cursorline = false
     vim.api.nvim_set_current_win(filter_win)
 		vim.cmd("star")
 end
@@ -359,10 +361,15 @@ local function create_filter_window()
         row = 0,
         col = col,
         style = "minimal",
+				focusable = true,
+        zindex = 101,  -- выше основного окна
     }
 
     -- Открываем окно для ввода фильтра
     filter_win = vim.api.nvim_open_win(filter_buf, true, wopts)
+
+    vim.wo[filter_win].winblend = 0
+    vim.wo[filter_win].winhighlight = "Normal:Search" -- используем встроенные hl-группы
 
     -- vim.cmd("highlight MyRedText guibg=" .. M.config.color_light_filter)
 		-- устанавливаем hl
