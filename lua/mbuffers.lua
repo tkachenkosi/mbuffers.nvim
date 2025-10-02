@@ -284,7 +284,7 @@ local function create_main_window()
     vim.wo[main_win].signcolumn = "no"
     vim.wo[main_win].colorcolumn = ""
 
-		-- vim.cmd("stopi")
+		vim.cmd("stopi")
 		-- -- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
 		-- vim.api.nvim_win_set_option(0, "cursorline", true)
 
