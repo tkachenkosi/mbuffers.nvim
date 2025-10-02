@@ -213,17 +213,15 @@ end
 local function create_main_window()
     -- Создаём основной буфер
     main_buf = vim.api.nvim_create_buf(false, true)
-		vim.bo[main_buf] = {
-			buftype = "nofile",
-			bufhidden = "wipe",
-			swapfile = false,
-			buflisted = false,
-			modifiable = true,
-			textwidth = 0,
-			filetype = "text",
-			-- undolevels = -1
-		}
 
+		vim.bo[main_buf].buftype = "nofile"
+		vim.bo[main_buf].bufhidden = "wipe"
+		vim.bo[main_buf].swapfile = false
+		vim.bo[main_buf].buflisted = false
+		vim.bo[main_buf].modifiable = true
+		vim.bo[main_buf].textwidth = 0
+		vim.bo[main_buf].filetype = "text"
+		vim.bo[main_buf].undolevels = -1
 
     -- Устанавливаем текст в буфере
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
@@ -313,16 +311,15 @@ end
 local function create_filter_window()
     -- Создаём буфер для ввода фильтра
     filter_buf = vim.api.nvim_create_buf(false, true)
-		vim.bo[filter_buf] = {
-			buftype = "nofile",
-			bufhidden = "wipe",
-			swapfile = false,
-			buflisted = false,
-			modifiable = true,
-			textwidth = 0,
-			filetype = "text",
-			-- undolevels = -1
-		}
+
+		vim.bo[filter_buf].buftype = "nofile"
+		vim.bo[filter_buf].bufhidden = "wipe"
+		vim.bo[filter_buf].swapfile = false
+		vim.bo[filter_buf].buflisted = false
+		vim.bo[filter_buf].modifiable = true
+		vim.bo[filter_buf].textwidth = 0
+		vim.bo[filter_buf].filetype = "text"
+		vim.bo[filter_buf].undolevels = -1
 
 		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {get_dir_progect()})
 
