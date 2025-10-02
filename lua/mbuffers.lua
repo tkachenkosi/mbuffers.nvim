@@ -14,14 +14,11 @@ local max_len_buffer = 0
 local current_win
 -- поиск строки по номеру буфера 
 local search_number_string = ""
--- домашняя директория
-local home_dir = ""
 
 local config = {
 	-- #112233
+	home_dir = tostring(os.getenv("HOME")),		-- домашняя директория
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
-	-- color_cursor_line = "#2b2b2b",				-- цвет подсветки строки с курсором
-	-- color_cursor_mane_line = "",		-- цвет подсветки строки в основном редакторе
 	color_light_path = "#ada085",					-- цвет выделения пути из имени файла
 	color_light_filter = "#224466",				-- цвет строки ввода фильтра
 	color_light_curr = "#f1b841",					-- цвет цвет номера для текущего буфера
@@ -142,7 +139,6 @@ local function highlight_path_in_filename(line, line_number)
 end
 
 
-
 -- Функция для выбора буфера
 local function select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
@@ -198,7 +194,7 @@ local function get_open_buffers()
 				if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
             -- local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1)
 						-- уберем путь к текущиму каталогу, дополнительн уберем домашние директорию
-            local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), home_dir, "", 1)
+            local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), config.home_dir, "", 1)
 
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
 						local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
@@ -331,8 +327,8 @@ local function create_main_window()
 end
 
 -- возвращает путь к каталогу проекта
-local function get_dir_progect()
-	local dir_progect = string.gsub(vim.fn.getcwd(), home_dir, "~", 1)
+local function get_dir_project()
+	local dir_progect = string.gsub(vim.fn.getcwd(), config.home_dir, "~", 1)
 	-- уточним максимальную длину всех строк
 	max_len_buffer = math.max(max_len_buffer, string.len(dir_progect) - 6)
 	return " " .. dir_progect .. "/* "
@@ -352,7 +348,7 @@ local function create_filter_window()
 		vim.bo[filter_buf].filetype = "text"
 		vim.bo[filter_buf].undolevels = -1
 
-		local dir_project = get_dir_progect()
+		local dir_project = get_dir_project()
 		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {dir_project})
 
     -- Создаём окно для ввода фильтра
@@ -445,14 +441,6 @@ end
 function M.setup(options)
 	config = vim.tbl_deep_extend("force", config, options or {})
 
-	-- получение цвета фона текущец строки
-	-- local hl = vim.api.nvim_get_hl(0, { name = 'CursorLine' })
-	-- if hl.bg then
-	-- 	M.config.color_cursor_mane_line = hl.bg
-	-- end
-
-	home_dir = tostring(os.getenv("HOME"))
-	-- vim.api.nvim_create_user_command("StartMbuffers", M.start, {})
 end
 
 -- Функция для запуска менеджера буферов с клавиатуры
