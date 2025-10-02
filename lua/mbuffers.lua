@@ -409,16 +409,12 @@ local function create_filter_window()
 		ns = vim.api.nvim_create_namespace("file_paths_highlights")
     -- vim.api.nvim_buf_add_highlight(filter_buf, ns, "MyRedText", 0, 0, -1)
 
-		local line_length = #vim.api.nvim_buf_get_lines(filter_buf, i, i+1, false)[1] or 0
-
-        vim.api.nvim_buf_set_extmark(filter_buf, ns, 0, 0, {
-            end_line = 0,
-            end_col = #get_dir_progect,
-            hl_group = "MyRedText",
-            priority = 50,
-        })
-
-
+		vim.api.nvim_buf_set_extmark(filter_buf, ns, 0, 0, {
+				end_line = 0,
+				end_col = #dir_project,
+				hl_group = "MyRedText",
+				priority = 50,
+		})
 
     -- Переключаемся в режим редактирования
     -- vim.api.nvim_command("startinsert")
