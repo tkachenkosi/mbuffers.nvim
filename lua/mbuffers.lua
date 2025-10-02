@@ -81,15 +81,30 @@ end
 local function close()
 		vim.g.mm_windows = nil
     -- Закрываем окна для фильтра и буфероф
-    vim.api.nvim_win_close(filter_win, true)
-		vim.api.nvim_buf_delete(filter_buf, { force = true })
-    vim.api.nvim_win_close(main_win, true)
-		vim.api.nvim_buf_delete(main_buf, { force = true })
+		if filter_win and vim.api.nvim_win_is_valid(filter_win) then
+			vim.api.nvim_win_close(filter_win, true)
+		end
+		if main_win and vim.api.nvim_win_is_valid(main_win) then
+			vim.api.nvim_win_close(main_win, true)
+		end
+
+		-- Удаляем буферы с задержкой (после закрытия окон)
+		vim.defer_fn(function()
+			if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
+				vim.api.nvim_buf_delete(filter_buf, { force = true })
+			end
+			if main_buf and vim.api.nvim_buf_is_valid(main_buf) then
+				vim.api.nvim_buf_delete(main_buf, { force = true })
+			end
+		end, 10)
+
 		-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_mane_line })
 		vim.cmd("stopi")
 
 		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
-    vim.api.nvim_set_current_win(current_win)
+		if current_win and vim.api.nvim_win_is_valid(current_win) then
+			vim.api.nvim_set_current_win(current_win)
+		end
 end
 
 -- Функция для подсветки пути в имени файла
@@ -125,8 +140,9 @@ local function select_main_window()
     vim.api.nvim_set_current_win(main_win)
 		vim.api.nvim_win_set_option(0, "cursorline", true)
     -- Устанавливаем режим "только для чтения"
-    vim.api.nvim_buf_set_option(main_buf, "readonly", true)
-    vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
+		vim.bo[main_buf].readonly = true
+		vim.bo[main_buf].modifiable = false
+
 		vim.cmd("stopi")
 end
 
@@ -134,8 +150,8 @@ local function select_filter_window()
     -- в буфер фильтра
 
     -- Убираем режим "только для чтения"
-    vim.api.nvim_buf_set_option(main_buf, "readonly", false)
-    vim.api.nvim_buf_set_option(main_buf, "modifiable", true)
+		vim.bo[main_buf].readonly = false
+		vim.bo[main_buf].modifiable = true
 
 		-- очищаем поле ввода фильта если там находится путь к папке проекта (* не допустима в имени файла)
 		if table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), ""):find("*", 1, true) then
@@ -191,6 +207,17 @@ end
 local function create_main_window()
     -- Создаём основной буфер
     main_buf = vim.api.nvim_create_buf(false, true)
+		vim.bo[main_buf] = {
+			buftype = "nofile",
+			bufhidden = "wipe",
+			swapfile = false,
+			buflisted = false,
+			modifiable = true,
+			textwidth = 0,
+			filetype = "text",
+			undolevels = -1,
+		}
+
 
     -- Устанавливаем текст в буфере
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
@@ -240,8 +267,8 @@ local function create_main_window()
 
 		local opts = { noremap = true, silent = true, buffer = main_buf }
     -- Устанавливаем режим "только для чтения"
-    vim.api.nvim_buf_set_option(main_buf, "readonly", true)
-    vim.api.nvim_buf_set_option(main_buf, "modifiable", false)
+		vim.bo[main_buf].readonly = true
+		vim.bo[main_buf].modifiable = false
 
 		vim.keymap.set("n", "<Esc>", function() close() end, opts)
 		vim.keymap.set("n", "q", function() close() end, opts)
@@ -280,7 +307,18 @@ end
 local function create_filter_window()
     -- Создаём буфер для ввода фильтра
     filter_buf = vim.api.nvim_create_buf(false, true)
-    vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {get_dir_progect()})
+		vim.bo[filter_buf] = {
+			buftype = "nofile",
+			bufhidden = "wipe",
+			swapfile = false,
+			buflisted = false,
+			modifiable = true,
+			textwidth = 0,
+			filetype = "text",
+			undolevels = -1,
+		}
+
+		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {get_dir_progect()})
 
     -- Создаём окно для ввода фильтра
     local width = 0
