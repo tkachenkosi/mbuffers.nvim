@@ -80,6 +80,12 @@ end
 
 local function close()
 		vim.g.mm_windows = nil
+
+		-- ВАЖНО: отключаем обработчики перед закрытием
+    if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
+        pcall(vim.api.nvim_buf_detach, filter_buf)
+    end
+
     -- Закрываем окна для фильтра и буфероф
 		if filter_win and vim.api.nvim_win_is_valid(filter_win) then
 			vim.api.nvim_win_close(filter_win, true)
@@ -215,7 +221,7 @@ local function create_main_window()
 			modifiable = true,
 			textwidth = 0,
 			filetype = "text",
-			undolevels = -1,
+			undolevels = -1
 		}
 
 
@@ -315,7 +321,7 @@ local function create_filter_window()
 			modifiable = true,
 			textwidth = 0,
 			filetype = "text",
-			undolevels = -1,
+			undolevels = -1
 		}
 
 		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {get_dir_progect()})
