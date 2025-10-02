@@ -370,7 +370,7 @@ local function create_filter_window()
 
     vim.wo[filter_win].cursorline = false
     vim.wo[filter_win].winblend = 0
-    vim.wo[filter_win].winhighlight = "Normal:Search" -- используем встроенные hl-группы
+    -- vim.wo[filter_win].winhighlight = "Normal:Search" -- используем встроенные hl-группы
 
     -- vim.cmd("highlight MyRedText guibg=" .. M.config.color_light_filter)
 		-- устанавливаем hl
