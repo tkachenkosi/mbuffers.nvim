@@ -275,21 +275,18 @@ local function create_main_window()
     main_win = vim.api.nvim_open_win(main_buf, true, wopts)
 
 		-- НОВЫЙ СТИЛЬ настройки окна
-    vim.wo[main_win] = {
-        cursorline = true,
-        winblend = 0,
-        winhighlight = "Normal:NormalFloat,CursorLine:Visual",
-        wrap = false,
-        number = false,
-        relativenumber = false,
-        signcolumn = "no",
-        colorcolumn = "",
-    }
+    vim.wo[main_win].cursorline = true
+    vim.wo[main_win].winblend = 0
+    vim.wo[main_win].winhighlight = "Normal:NormalFloat,CursorLine:Visual"
+    vim.wo[main_win].wrap = false
+    vim.wo[main_win].number = false
+    vim.wo[main_win].relativenumber = false
+    vim.wo[main_win].signcolumn = "no"
+    vim.wo[main_win].colorcolumn = ""
 
 		-- vim.cmd("stopi")
 		-- -- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
 		-- vim.api.nvim_win_set_option(0, "cursorline", true)
-
 
 		local opts = { noremap = true, silent = true, buffer = main_buf }
     -- Устанавливаем режим "только для чтения"
