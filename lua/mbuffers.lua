@@ -118,42 +118,27 @@ local function close()
 end
 
 -- Функция для подсветки пути в имени файла
-local function highlight_path_in_filename1(line, line_number)
-
-		if line:find("%", 1, true) then
-			vim.api.nvim_buf_add_highlight(main_buf, ns, "MyHighlightPathCurr", line_number - 1, 5, 7)
-		end
-
-    local last_slash_pos = line:find("/[^/]*$")
-    if not last_slash_pos then
-        return
-    end
-
-    -- Добавляем подсветку с помощью vim.highlight (эта hl определена в malpha.nvim )
-    vim.api.nvim_buf_add_highlight(main_buf, ns, "MyHighlightPath", line_number - 1, 8, last_slash_pos)
-end
-
 local function highlight_path_in_filename(line, line_number)
-    local row = line_number - 1
+	local row = line_number - 1
 
-    if line:find("%", 1, true) then
-        vim.api.nvim_buf_set_extmark(main_buf, ns, row, 5, {
-            end_line = row,
-            end_col = 7,
-            hl_group = "MyHighlightPathCurr",
-            priority = 100,
-        })
-    end
+	if line:find("%", 1, true) then
+		vim.api.nvim_buf_set_extmark(main_buf, ns, row, 5, {
+			end_line = row,
+			end_col = 7,
+			hl_group = "MyHighlightPathCurr",
+			priority = 100,
+		})
+	end
 
-    local last_slash_pos = line:find("/[^/]*$")
-    if last_slash_pos then
-        vim.api.nvim_buf_set_extmark(main_buf, ns, row, 8, {
-            end_line = row,
-            end_col = last_slash_pos,
-            hl_group = "MyHighlightPath",
-            priority = 50,
-        })
-    end
+	local last_slash_pos = line:find("/[^/]*$")
+	if last_slash_pos then
+		vim.api.nvim_buf_set_extmark(main_buf, ns, row, 8, {
+			end_line = row,
+			end_col = last_slash_pos,
+			hl_group = "MyHighlightPath",
+			priority = 50,
+		})
+	end
 end
 
 
