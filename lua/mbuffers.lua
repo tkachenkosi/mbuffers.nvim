@@ -243,9 +243,15 @@ local function create_main_window()
     -- vim.cmd("highlight HighlightPath guifg=" .. M.config.color_light_path)
 		-- vim.cmd("highlight HighlightPathCurr guifg="..M.config.color_light_curr)
 
-		-- устанавливаем hl
+		-- устанавливаем hl (MyHighlightPath уже установлен глобально в модуле malpha)
+		vim.api.nvim_set_hl(0, "MyHighlightPath", {
+			fg = config.color_light_path,
+			ctermfg = 180,
+			default = true,
+		})
+
 		vim.api.nvim_set_hl(0, "MyHighlightPathCurr", {
-			fg = config.color_light_curr,      -- GUI цвет
+			fg = config.color_light_curr,      -- цвет
 			ctermfg = 180,       -- Терминальный цвет
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
