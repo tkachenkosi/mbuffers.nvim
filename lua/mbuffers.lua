@@ -307,6 +307,15 @@ local function create_main_window()
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
 
+		-- отключаем глобальные keymaps
+		for _, map in ipairs(vim.api.nvim_buf_get_keymap(main_buf, 'n')) do
+			vim.keymap.del('n', map.lhs, { buffer = main_buf })
+		end
+		-- Очищаем ВСЕ маппинги для всех мод
+		for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y' }) do
+				vim.keymap.set('n', key, '<Nop>', opts)
+		end
+
 		vim.keymap.set("n", "<Esc>", function() close() end, opts)
 		vim.keymap.set("n", "q", function() close() end, opts)
 		vim.keymap.set("n", "f", function() select_filter_window() end, opts)
