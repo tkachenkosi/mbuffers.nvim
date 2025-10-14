@@ -308,11 +308,11 @@ local function create_main_window()
 		vim.bo[main_buf].modifiable = false
 
 		-- отключаем глобальные keymaps
-		-- for _, map in ipairs(vim.api.nvim_buf_get_keymap(main_buf, 'n')) do
+		for _, map in ipairs(vim.api.nvim_buf_get_keymap(main_buf, 'n')) do
 			-- vim.api.nvim_buf_del_keymap(main_buf, 'n', map.lhs)
-			-- vim.keymap.del('n', map.lhs, opts)
+			vim.keymap.del('n', map.lhs, opts)
 				-- vim.keymap.set('n', map.lhs, '<Nop>', opts)
-		-- end
+		end
 		-- Очищаем ВСЕ маппинги для всех мод
 		for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y', '<F9>' }) do
 				vim.keymap.set('n', key, '<Nop>', opts)
