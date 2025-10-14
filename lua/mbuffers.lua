@@ -302,7 +302,8 @@ local function create_main_window()
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
 
-		for _, key in ipairs({ ':', '/', '?','*', '#', '<F12>','<Leader>' }) do
+		-- отключаем некоторые keymaps
+		for _, key in ipairs({ ':','/','?','*','#','<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>','<Leader>' }) do
 				vim.keymap.set('n', key, '<Nop>', opts)
 		end
 
@@ -398,8 +399,11 @@ local function create_filter_window()
 		vim.cmd("star")
 
 		local opts = { noremap = true, silent = true, buffer = filter_buf }
+		-- отключаем некоторые keymaps
+		for _, key in ipairs({ '<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>' }) do
+				vim.keymap.set('i', key, '<Nop>', opts)
+		end
     -- Устанавливаем клавишу Esc для закрытия окна
-		vim.keymap.set('i', '<F12>', '<Nop>', opts)
 		vim.keymap.set("i", "<Esc>", function() close() end, opts)
 		vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
 		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
