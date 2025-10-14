@@ -240,9 +240,6 @@ local function create_main_window()
     -- Устанавливаем текст в буфере
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
 
-    -- vim.cmd("highlight HighlightPath guifg=" .. M.config.color_light_path)
-		-- vim.cmd("highlight HighlightPathCurr guifg="..M.config.color_light_curr)
-
 		-- устанавливаем hl (MyHighlightPath уже установлен глобально в модуле malpha)
 		vim.api.nvim_set_hl(0, "MyHighlightPath", {
 			fg = config.color_light_path,
@@ -299,27 +296,12 @@ local function create_main_window()
     vim.wo[main_win].colorcolumn = ""
 
 		vim.cmd("stopi")
-		-- -- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_line })
-		-- vim.api.nvim_win_set_option(0, "cursorline", true)
 
 		local opts = { noremap = true, silent = true, buffer = main_buf }
     -- Устанавливаем режим "только для чтения"
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
 
-		-- отключаем глобальные keymaps
-		-- for _, map in ipairs(vim.api.nvim_buf_get_keymap(main_buf, 'n')) do
-			-- vim.api.nvim_buf_del_keymap(main_buf, 'n', map.lhs)
-			-- vim.keymap.del('n', map.lhs, opts)
-				-- vim.keymap.set('n', map.lhs, '<Nop>', opts)
-		-- end
-
-    -- for _, map in ipairs(vim.api.nvim_get_keymap('n')) do
-				-- vim.keymap.set('n', map.lhs, '<Nop>', opts)
-    -- end
-
-		-- Очищаем маппинги
-		-- for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y' }) do
 		for _, key in ipairs({ ':', '/', '?','*', '#', '<F12>','<Leader>' }) do
 				vim.keymap.set('n', key, '<Nop>', opts)
 		end
@@ -332,20 +314,10 @@ local function create_main_window()
 		vim.keymap.set("n", "<End>", function() select_last_line() end, opts)
 		vim.keymap.set("n", "<CR>", function() select_buffer() end, opts)
 
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "q", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "f", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<c-Up>", "<Cmd>lua require('mbuffers').select_filter_window()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Home>", "<Cmd>lua require('mbuffers').select_first_line()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<End>", "<Cmd>lua require('mbuffers').select_last_line()<CR>", { noremap = true, silent = true })
-    -- -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_filter_up()<CR>", { noremap = true, silent = true })
-    -- -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<Up>", "<Cmd>lua require('mbuffers').select_up()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(main_buf, "n", "<CR>", "<Cmd>lua require('mbuffers').select_buffer()<CR>", { noremap = true, silent = true })
 
 		-- Привязка цифровых клавиш (0-9)
 		for i = 0, 9 do
 			vim.keymap.set("n", tostring(i), function() n_number_pressed_find_line(i) end, opts)
-			-- vim.api.nvim_buf_set_keymap(main_buf, 'n', tostring(i), "<Cmd>lua  require('mbuffers').n_number_pressed_find_line('"..i.."')<CR>", { noremap = true, silent = true })
 		end
 end
 
@@ -431,9 +403,6 @@ local function create_filter_window()
 		vim.keymap.set("i", "<Esc>", function() close() end, opts)
 		vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
 		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
-    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Esc>", "<Cmd>lua require('mbuffers').close()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<CR>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
-    -- vim.api.nvim_buf_set_keymap(filter_buf, "i", "<Down>", "<Cmd>lua require('mbuffers').select_main_window()<CR>", { noremap = true, silent = true })
 
     -- Устанавливаем обработчик ввода текста
     -- local buf_number = vim.api.nvim_buf_get_number(filter_buf) -- Номер буфера
