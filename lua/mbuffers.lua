@@ -376,6 +376,7 @@ local function create_filter_window()
         style = "minimal",
 				focusable = true,
         zindex = 101,  -- выше основного окна
+        border = "none",
     }
 
     -- Открываем окно для ввода фильтра
