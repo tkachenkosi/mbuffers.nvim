@@ -314,24 +314,13 @@ local function create_main_window()
 				-- vim.keymap.set('n', map.lhs, '<Nop>', opts)
 		-- end
 
+    -- for _, map in ipairs(vim.api.nvim_get_keymap('n')) do
+				-- vim.keymap.set('n', map.lhs, '<Nop>', opts)
+    -- end
 
-
-
-
-    for _, map in ipairs(vim.api.nvim_get_keymap('n')) do
-				vim.keymap.set('n', map.lhs, '<Nop>', opts)
-    end
-
-
-
-
-
-
-
-
-
-		-- Очищаем ВСЕ маппинги для всех мод
-		for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y' }) do
+		-- Очищаем маппинги
+		-- for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y' }) do
+		for _, key in ipairs({ ':', '/', '?','*', '#', '<F12>','<Leader>' }) do
 				vim.keymap.set('n', key, '<Nop>', opts)
 		end
 
@@ -438,6 +427,7 @@ local function create_filter_window()
 
 		local opts = { noremap = true, silent = true, buffer = filter_buf }
     -- Устанавливаем клавишу Esc для закрытия окна
+		vim.keymap.set('i', '<F12>', '<Nop>', opts)
 		vim.keymap.set("i", "<Esc>", function() close() end, opts)
 		vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
 		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
