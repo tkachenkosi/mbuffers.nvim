@@ -314,7 +314,7 @@ local function create_main_window()
 				-- vim.keymap.set('n', map.lhs, '<Nop>', opts)
 		-- end
 		-- Очищаем ВСЕ маппинги для всех мод
-		for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y', 'F9' }) do
+		for _, key in ipairs({ 'n', 'i', 'v', 'x', 's', 'o', 'q',':', '/', '?','*', '#','n', 'N','p', 'P','y', '<F9>' }) do
 				vim.keymap.set('n', key, '<Nop>', opts)
 		end
 
