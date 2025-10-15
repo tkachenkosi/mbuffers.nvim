@@ -443,7 +443,7 @@ end
 
 -- Функция для запуска менеджера буферов с клавиатуры
 function M.start()
-	if vim.g.mm_windows ~= nil then
+	if vim.g.mm_windows ~= nil or #vim.api.nvim_list_bufs() < 2 then
 		return
 	end
 	vim.g.mm_windows = 1
