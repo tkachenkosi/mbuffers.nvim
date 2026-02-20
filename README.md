@@ -3,7 +3,6 @@
 #### Installation and Usage:
 ```
 vim.keymap.set({'n', 'i'}, '<F12>', function() require('mbuffers').start(); end)
-vim.keymap.set('n', '<leader><F12>', function() require('msession').start(); end)
 
 
 Setting up for Lazy:
@@ -39,6 +38,3 @@ Esc         - close the buffer manager window
 
 CR, Down    - go to the buffer list window
 
-#### Command:
-
-|:StartMbuffers|

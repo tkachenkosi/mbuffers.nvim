@@ -2,21 +2,14 @@ local M = {}
 
 vim.g.mm_windows = nil
 
--- Основной буфер и окно
 local main_buf, main_win
--- Буфер и окно для ввода фильтра
 local filter_buf, filter_win
--- Исходные строки (для фильтрации)
 local original_lines = {}
--- для вычисления ширины окна
 local max_len_buffer = 0
--- окно откуда был запуск и в котором нужно поменять содержимое
 local current_win
--- поиск строки по номеру буфера 
 local search_number_string = ""
 
 local config = {
-	-- #112233
 	home_dir = tostring(os.getenv("HOME")),		-- домашняя директория
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
 	color_light_path = "#ada085",					-- цвет выделения пути из имени файла
@@ -24,25 +17,18 @@ local config = {
 	color_light_curr = "#f1b841",					-- цвет цвет номера для текущего буфера
 }
 
--- Создаем namespace для хайлайтов
 local ns
 
--- переход на первую строку
 local function select_first_line()
 	search_number_string = ""
 	vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
--- переход  на последнию строку
 local function select_last_line()
-	-- Получаем количество строк в текущем буфере
-	-- Перемещаем курсор на последнюю строку
 	search_number_string = ""
 	vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
 end
 
--- поиск строки по номеру буфера
--- обрабатывает цифровые клавиши
 local function n_number_pressed_find_line(key)
 	search_number_string = search_number_string .. key
 
@@ -50,41 +36,21 @@ local function n_number_pressed_find_line(key)
 		search_number_string = key
 	end
 
-	-- Ищем строку в буфере
   local num_line = vim.fn.search(search_number_string, 'n')
 
-  -- Если строка найдена, перемещаем курсор на неё
   if num_line > 0 then
-		-- Перемещаем курсор
     vim.api.nvim_win_set_cursor(0, { num_line, 0 })
   end
 end
-
--- перехват движения вверх
--- local function select_up()
-	-- vim.cmd('norm! k')
--- end
-
-	-- if vim.api.nvim__buf_stats(0).current_lnum == 1 then
-		-- переходим в окно фильта когда достигнута первая строчка списка
-		-- M.select_filter_window()
-
-		-- Получаем количество строк в текущем буфере
-		-- Перемещаем курсор на последнюю строку
-		-- vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
-	-- end
--- end
 
 
 local function safe_close()
 	vim.g.mm_windows = nil
 
-	-- ВАЖНО: отключаем обработчики перед закрытием
 	if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
 			pcall(vim.api.nvim_buf_detach, filter_buf)
 	end
 
-	-- Закрываем окна для фильтра и буфероф
 	if filter_win and vim.api.nvim_win_is_valid(filter_win) then
 		vim.api.nvim_win_close(filter_win, true)
 	end
@@ -92,29 +58,16 @@ local function safe_close()
 		vim.api.nvim_win_close(main_win, true)
 	end
 
-	-- Удаляем буферы с задержкой 10 mc (после закрытия окон)
-	-- vim.defer_fn(function()
-	-- 	if filter_buf and vim.api.nvim_buf_is_valid(filter_buf) then
-	-- 		vim.api.nvim_buf_delete(filter_buf, { force = true })
-	-- 	end
-	-- 	if main_buf and vim.api.nvim_buf_is_valid(main_buf) then
-	-- 		vim.api.nvim_buf_delete(main_buf, { force = true })
-	-- 	end
-	-- end, 10)
-
-	-- vim.api.nvim_set_hl(0, "CursorLine", { bg = config.color_cursor_mane_line })
 	vim.cmd("stopi")
 end
 
 local function close()
 		safe_close()
-		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
 		if current_win and vim.api.nvim_win_is_valid(current_win) then
 			vim.api.nvim_set_current_win(current_win)
 		end
 end
 
--- Функция для подсветки пути в имени файла
 local function highlight_path_in_filename(line, line_number)
 	local row = line_number - 1
 
@@ -139,26 +92,18 @@ local function highlight_path_in_filename(line, line_number)
 end
 
 
--- Функция для выбора буфера
 local function select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
 		safe_close()
-    -- Переключаемся на выбранный буфер
-    -- vim.api.nvim_set_current_buf(vim.fn.bufnr(buf_number))
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
-		-- теперь нужно переключиться в прежнее окно из которого было вызвано список буферов
 		if current_win and vim.api.nvim_win_is_valid(current_win) then
 			vim.api.nvim_set_current_win(current_win)
 		end
 end
 
--- Функция для переключение на окно с буферами 
 local function select_main_window()
-    -- Возвращаемся в основной буфер
     vim.api.nvim_set_current_win(main_win)
-		-- vim.api.nvim_win_set_option(0, "cursorline", true)
     vim.wo[main_win].cursorline = true
-    -- Устанавливаем режим "только для чтения"
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
 
@@ -166,41 +111,32 @@ local function select_main_window()
 end
 
 local function select_filter_window()
-    -- в буфер фильтра
-
-    -- Убираем режим "только для чтения"
 		vim.bo[main_buf].readonly = false
 		vim.bo[main_buf].modifiable = true
 
-		-- очищаем поле ввода фильта если там находится путь к папке проекта (* не допустима в имени файла)
 		if table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), ""):find("*", 1, true) then
 			vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {})
 		end
 
-		-- vim.api.nvim_win_set_option(0, "cursorline", false)
     vim.wo[main_win].cursorline = false
     vim.api.nvim_set_current_win(filter_win)
 		vim.cmd("star")
 end
 
--- Функция для получения списка открытых буферов с номерами и атрибутами
 local function get_open_buffers()
     original_lines = {}
-    local current_buf = vim.api.nvim_get_current_buf() -- Текущий активный буфер
-    local previous_buf = vim.fn.bufnr("#")             -- Предыдущий буфер
+    local current_buf = vim.api.nvim_get_current_buf()
+    local previous_buf = vim.fn.bufnr("#")
 		local root_dir = vim.fn.getcwd() .. "/"
 
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 				if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
-            -- local file_name = string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1)
-						-- уберем путь к текущиму каталогу, дополнительн уберем домашние директорию
             local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), config.home_dir, "", 1)
 
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
 						local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
 						max_len_buffer = math.max(max_len_buffer, string.len(file_name))
 
-            -- Определяем атрибуты буфера
             local attributes = {}
             if buf == current_buf then
                 table.insert(attributes, "%")
@@ -217,15 +153,12 @@ local function get_open_buffers()
                 table.insert(attributes, " ")
 						end
 
-            -- Формируем строку с информацией о буфере
             table.insert(original_lines, string.format(" %3d %s %s", buf_number, table.concat(attributes, ""), file_name))
         end
     end
 end
 
--- Функция для создания основного окна
 local function create_main_window()
-    -- Создаём основной буфер
     main_buf = vim.api.nvim_create_buf(false, true)
 
 		vim.bo[main_buf].buftype = "nofile"
@@ -237,10 +170,8 @@ local function create_main_window()
 		vim.bo[main_buf].filetype = "text"
 		vim.bo[main_buf].undolevels = -1
 
-    -- Устанавливаем текст в буфере
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
 
-		-- устанавливаем hl (MyHighlightPath уже установлен глобально в модуле malpha)
 		vim.api.nvim_set_hl(0, "MyHighlightPath", {
 			fg = config.color_light_path,
 			ctermfg = 180,
@@ -259,7 +190,6 @@ local function create_main_window()
 			highlight_path_in_filename(line, i)
 		end
 
-    -- Создаём основное окно
     local width = 0
 		if config.width_win > 0 then
 			width = math.min(vim.o.columns - 10, config.width_win )
@@ -282,10 +212,8 @@ local function create_main_window()
         border = "none",
     }
 
-    -- Открываем основное окно
     main_win = vim.api.nvim_open_win(main_buf, true, wopts)
 
-		-- НОВЫЙ СТИЛЬ настройки окна
     vim.wo[main_win].cursorline = true
     vim.wo[main_win].winblend = 0
     vim.wo[main_win].winhighlight = "Normal:NormalFloat,CursorLine:Visual"
@@ -298,11 +226,9 @@ local function create_main_window()
 		vim.cmd("stopi")
 
 		local opts = { noremap = true, silent = true, buffer = main_buf }
-    -- Устанавливаем режим "только для чтения"
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
 
-		-- отключаем некоторые keymaps
 		for _, key in ipairs({ ':','/','?','*','#','<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>','<Leader>' }) do
 				vim.keymap.set('n', key, '<Nop>', opts)
 		end
@@ -316,23 +242,18 @@ local function create_main_window()
 		vim.keymap.set("n", "<CR>", function() select_buffer() end, opts)
 
 
-		-- Привязка цифровых клавиш (0-9)
 		for i = 0, 9 do
 			vim.keymap.set("n", tostring(i), function() n_number_pressed_find_line(i) end, opts)
 		end
 end
 
--- возвращает путь к каталогу проекта
 local function get_dir_project()
 	local dir_progect = string.gsub(vim.fn.getcwd(), config.home_dir, "~", 1)
-	-- уточним максимальную длину всех строк
 	max_len_buffer = math.max(max_len_buffer, string.len(dir_progect) - 6)
 	return " " .. dir_progect .. "/* "
 end
 
--- Функция для создания окна ввода фильтра
 local function create_filter_window()
-    -- Создаём буфер для ввода фильтра
     filter_buf = vim.api.nvim_create_buf(false, true)
 
 		vim.bo[filter_buf].buftype = "nofile"
@@ -347,7 +268,6 @@ local function create_filter_window()
 		local dir_project = get_dir_project()
 		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {dir_project})
 
-    -- Создаём окно для ввода фильтра
     local width = 0
 		if config.width_win > 0 then
 			width = math.min(vim.o.columns - 10, config.width_win )
@@ -365,19 +285,15 @@ local function create_filter_window()
         col = col,
         style = "minimal",
 				focusable = true,
-        zindex = 101,  -- выше основного окна
+        zindex = 101,
         border = "none",
     }
 
-    -- Открываем окно для ввода фильтра
     filter_win = vim.api.nvim_open_win(filter_buf, true, wopts)
 
     vim.wo[filter_win].cursorline = false
     vim.wo[filter_win].winblend = 0
-    -- vim.wo[filter_win].winhighlight = "Normal:Search" -- используем встроенные hl-группы
 
-    -- vim.cmd("highlight MyRedText guibg=" .. M.config.color_light_filter)
-		-- устанавливаем hl
 		vim.api.nvim_set_hl(0, "MyRedText", {
 			bg = config.color_light_filter,      -- GUI цвет
 			ctermfg = 180,       -- Терминальный цвет
@@ -385,7 +301,6 @@ local function create_filter_window()
 		})
 
 		ns = vim.api.nvim_create_namespace("file_paths_highlights")
-    -- vim.api.nvim_buf_add_highlight(filter_buf, ns, "MyRedText", 0, 0, -1)
 
 		vim.api.nvim_buf_set_extmark(filter_buf, ns, 0, 0, {
 				end_line = 0,
@@ -394,29 +309,21 @@ local function create_filter_window()
 				priority = 50,
 		})
 
-    -- Переключаемся в режим редактирования
-    -- vim.api.nvim_command("startinsert")
 		vim.cmd("star")
 
 		local opts = { noremap = true, silent = true, buffer = filter_buf }
-		-- отключаем некоторые keymaps
 		for _, key in ipairs({ '<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>' }) do
 				vim.keymap.set('i', key, '<Nop>', opts)
 		end
-    -- Устанавливаем клавишу Esc для закрытия окна
 		vim.keymap.set("i", "<Esc>", function() close() end, opts)
 		vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
 		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
 
-    -- Устанавливаем обработчик ввода текста
-    -- local buf_number = vim.api.nvim_buf_get_number(filter_buf) -- Номер буфера
     vim.api.nvim_buf_attach(filter_buf, false, {
         on_lines = function()
 					vim.schedule(function()
-            -- Получаем текст фильтра
             local filter_text = table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), "")
 
-            -- Фильтруем строки в основном буфере
             local filtered_lines = {}
             for _, line in ipairs(original_lines) do
                 if line:find(filter_text, 1, true) then
@@ -424,7 +331,6 @@ local function create_filter_window()
                 end
             end
 
-            -- Обновляем основной буфер
             vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, filtered_lines)
 						for i, line in ipairs(filtered_lines) do
 							highlight_path_in_filename(line, i)
@@ -441,7 +347,6 @@ function M.setup(options)
 
 end
 
--- Функция для запуска менеджера буферов с клавиатуры
 function M.start()
 	if vim.g.mm_windows ~= nil or #vim.api.nvim_list_bufs() < 2 then
 		return
@@ -451,10 +356,8 @@ function M.start()
 	current_win = vim.api.nvim_get_current_win()
 	get_open_buffers()
 
-  -- Создаём окно ввода фильтра
   create_filter_window()
 
-  -- Создаём основное окно
   create_main_window()
 end
 
