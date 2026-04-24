@@ -9,6 +9,9 @@ local max_len_buffer = 0
 local current_win
 local search_number_string = ""
 
+local main_ns
+local filter_ns
+
 local config = {
 	home_dir = tostring(os.getenv("HOME")),		-- домашняя директория
 	width_win = 0,												-- ширина окна, если = 0 вычисляется
@@ -17,7 +20,7 @@ local config = {
 	color_light_curr = "#f1b841",					-- цвет цвет номера для текущего буфера
 }
 
-local ns
+-- local ns
 
 local function select_first_line()
 	search_number_string = ""
@@ -73,7 +76,7 @@ local function highlight_path_in_filename(line, line_number)
 	local row = line_number - 1
 
 	if line:find("%", 1, true) then
-		vim.api.nvim_buf_set_extmark(main_buf, ns, row, 5, {
+		vim.api.nvim_buf_set_extmark(main_buf, main_ns, row, 5, {
 			end_line = row,
 			end_col = 7,
 			hl_group = "MyHlPathCurr",
@@ -83,7 +86,7 @@ local function highlight_path_in_filename(line, line_number)
 
 	local last_slash_pos = line:find("/[^/]*$")
 	if last_slash_pos then
-		vim.api.nvim_buf_set_extmark(main_buf, ns, row, 8, {
+		vim.api.nvim_buf_set_extmark(main_buf, main_ns, row, 8, {
 			end_line = row,
 			end_col = last_slash_pos,
 			hl_group = "MyHlPath",
@@ -190,7 +193,8 @@ local function create_main_window()
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
 
-		ns = vim.api.nvim_create_namespace("file_paths_highlights")
+		-- ns = vim.api.nvim_create_namespace("file_paths_highlights")
+		main_ns = vim.api.nvim_create_namespace("main_highlights")
 
 		for i, line in ipairs(original_lines) do
 			highlight_path_in_filename(line, i)
@@ -307,9 +311,10 @@ local function create_filter_window()
 			default = true,   -- наследовать отсутствующие атрибуты
 		})
 
-		ns = vim.api.nvim_create_namespace("file_paths_highlights")
+		-- ns = vim.api.nvim_create_namespace("file_paths_highlights")
+		filter_ns = vim.api.nvim_create_namespace("filter_highlights")
 
-		vim.api.nvim_buf_set_extmark(filter_buf, ns, 0, 0, {
+		vim.api.nvim_buf_set_extmark(filter_buf, filter_ns, 0, 0, {
 				end_line = 0,
 				end_col = #dir_project,
 				hl_group = "MyRedText",
@@ -343,7 +348,7 @@ local function create_filter_window()
             vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, filtered_lines)
 
 						-- чистим highlight
-						vim.api.nvim_buf_clear_namespace(main_buf, ns, 0, -1)
+						vim.api.nvim_buf_clear_namespace(main_buf, main_ns, 0, -1)
 
 						-- заново ставим highlight
 						for i, line in ipairs(filtered_lines) do
