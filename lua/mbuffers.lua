@@ -339,7 +339,13 @@ local function create_filter_window()
                 end
             end
 
+						-- обновляем текст
             vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, filtered_lines)
+
+						-- чистим highlight
+						vim.api.nvim_buf_clear_namespace(main_buf, ns, 0, -1)
+
+						-- заново ставим highlight
 						for i, line in ipairs(filtered_lines) do
 							highlight_path_in_filename(line, i)
 						end
