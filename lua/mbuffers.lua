@@ -58,7 +58,8 @@ local function safe_close()
 		vim.api.nvim_win_close(main_win, true)
 	end
 
-	vim.cmd("stopi")
+	-- vim.cmd("stopi")
+	vim.cmd.stopinsert()
 end
 
 local function close()
@@ -107,7 +108,8 @@ local function select_main_window()
 		vim.bo[main_buf].readonly = true
 		vim.bo[main_buf].modifiable = false
 
-		vim.cmd("stopi")
+		-- vim.cmd("stopi")
+		vim.cmd.stopinsert()
 end
 
 local function select_filter_window()
@@ -120,7 +122,8 @@ local function select_filter_window()
 
     vim.wo[main_win].cursorline = false
     vim.api.nvim_set_current_win(filter_win)
-		vim.cmd("star")
+		-- vim.cmd("star")
+		vim.cmd.startinsert()
 end
 
 local function get_open_buffers()
@@ -223,7 +226,8 @@ local function create_main_window()
     vim.wo[main_win].signcolumn = "no"
     vim.wo[main_win].colorcolumn = ""
 
-		vim.cmd("stopi")
+		-- vim.cmd("stopi")
+		vim.cmd.stopinsert()
 
 		local opts = { noremap = true, silent = true, buffer = main_buf }
 		vim.bo[main_buf].readonly = true
@@ -309,7 +313,8 @@ local function create_filter_window()
 				priority = 50,
 		})
 
-		vim.cmd("star")
+		-- vim.cmd("star")
+		vim.cmd.startinsert()
 
 		local opts = { noremap = true, silent = true, buffer = filter_buf }
 		for _, key in ipairs({ '<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>' }) do
