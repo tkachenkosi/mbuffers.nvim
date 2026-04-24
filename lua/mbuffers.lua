@@ -135,7 +135,8 @@ local function get_open_buffers()
 		local root_dir = vim.fn.getcwd() .. "/"
 
     for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-				if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
+				-- if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
+				if vim.bo[buf].buflisted == 1 and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_name(buf) ~= "" then
             local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), config.home_dir, "", 1)
 
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
