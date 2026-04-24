@@ -76,7 +76,7 @@ local function highlight_path_in_filename(line, line_number)
 		vim.api.nvim_buf_set_extmark(main_buf, ns, row, 5, {
 			end_line = row,
 			end_col = 7,
-			hl_group = "MyHighlightPathCurr",
+			hl_group = "MyHlPathCurr",
 			priority = 100,
 		})
 	end
@@ -86,7 +86,7 @@ local function highlight_path_in_filename(line, line_number)
 		vim.api.nvim_buf_set_extmark(main_buf, ns, row, 8, {
 			end_line = row,
 			end_col = last_slash_pos,
-			hl_group = "MyHighlightPath",
+			hl_group = "MyHlPath",
 			priority = 50,
 		})
 	end
@@ -175,13 +175,13 @@ local function create_main_window()
 
     vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, original_lines)
 
-		vim.api.nvim_set_hl(0, "MyHighlightPath", {
+		vim.api.nvim_set_hl(0, "MyHlPath", {
 			fg = config.color_light_path,
 			ctermfg = 180,
 			default = true,
 		})
 
-		vim.api.nvim_set_hl(0, "MyHighlightPathCurr", {
+		vim.api.nvim_set_hl(0, "MyHlPathCurr", {
 			fg = config.color_light_curr,      -- цвет
 			ctermfg = 180,       -- Терминальный цвет
 			default = true,   -- наследовать отсутствующие атрибуты
