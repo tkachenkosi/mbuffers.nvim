@@ -373,7 +373,7 @@ local function create_filter_window()
 				local filter_text = table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), "")
 				update_buffer_list_filtered(filter_text)
 				filter_debounce_timer = nil
-			end, 150)
+			end, 250)
 
 		end,})
 end
