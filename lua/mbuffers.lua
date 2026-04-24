@@ -84,14 +84,7 @@ local function highlight_path_in_filename(line, line_number)
 		})
 	end
 
-	-- local last_slash_pos = line:find("/[^/]*$")
-	-- local last_slash = line:match("^.*()/")
-
-	local last_slash = line:reverse():find("/")
-	if last_slash then
-		last_slash = #line - last_slash + 1
-	end
-
+	local last_slash_pos = line:find("/[^/]*$")
 	if last_slash_pos then
 		vim.api.nvim_buf_set_extmark(main_buf, main_ns, row, 8, {
 			end_line = row,
