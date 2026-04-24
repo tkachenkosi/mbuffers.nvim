@@ -128,6 +128,7 @@ end
 
 local function get_open_buffers()
     original_lines = {}
+		max_len_buffer = 0   -- ВАЖНО
     local current_buf = vim.api.nvim_get_current_buf()
     local previous_buf = vim.fn.bufnr("#")
 		local root_dir = vim.fn.getcwd() .. "/"
