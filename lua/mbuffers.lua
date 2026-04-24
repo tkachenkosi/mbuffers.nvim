@@ -9,6 +9,10 @@ local max_len_buffer = 0   -- ВАЖНО самая длинная строка 
 local current_win
 local search_number_string = ""
 
+-- для плавного фильтра
+local filter_debounce_timer = nil
+local is_filtering = false
+
 local main_ns
 local filter_ns
 
@@ -101,7 +105,8 @@ local function select_buffer()
 		if not buf_number then return end		-- ? рекомендация
 		safe_close()
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
-		if current_win and vim.api.nvim_win_is_valid(current_win) then
+		if current_win and vim.api.nvim_win_is_valid(currlocal filter_debounce_timer = nil
+local is_filtering = falseent_win) then
 			vim.api.nvim_set_current_win(current_win)
 		end
 end
@@ -264,6 +269,34 @@ local function get_dir_project()
 	return " " .. dir_progect .. "/* "
 end
 
+-- установка фильтра
+local function update_buffer_list_filtered(filter_text)
+	if is_filtering then return end
+  is_filtering = true
+
+	vim.schedule(function()
+		local filtered_lines = {}
+		for _, line in ipairs(original_lines) do
+			if line:find(filter_text, 1, true) then
+				table.insert(filtered_lines, line)
+			end
+		end
+
+		-- обновляем текст
+		vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, filtered_lines)
+
+		-- чистим highlight
+		vim.api.nvim_buf_clear_namespace(main_buf, main_ns, 0, -1)
+
+		-- заново ставим highlight
+		for i, line in ipairs(filtered_lines) do
+			highlight_path_in_filename(line, i)
+		end
+
+		is_filtering = false
+	end)
+end
+
 local function create_filter_window()
     filter_buf = vim.api.nvim_create_buf(false, true)
 
@@ -333,30 +366,20 @@ local function create_filter_window()
 		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
 
     vim.api.nvim_buf_attach(filter_buf, false, {
-        on_lines = function()
-					vim.schedule(function()
-            local filter_text = table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), "")
+			on_lines = function()
+				if filter_debounce_timer then
+					filter_debounce_timer:stop()
+				end
 
-            local filtered_lines = {}
-            for _, line in ipairs(original_lines) do
-                if line:find(filter_text, 1, true) then
-                    table.insert(filtered_lines, line)
-                end
-            end
 
-						-- обновляем текст
-            vim.api.nvim_buf_set_lines(main_buf, 0, -1, false, filtered_lines)
+				filter_debounce_timer = vim.defer_fn(function()
+					local filter_text = table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), "")
+					update_buffer_list_filtered(filter_text)
+					filter_debounce_timer = nil
+				end, 350)
 
-						-- чистим highlight
-						vim.api.nvim_buf_clear_namespace(main_buf, main_ns, 0, -1)
 
-						-- заново ставим highlight
-						for i, line in ipairs(filtered_lines) do
-							highlight_path_in_filename(line, i)
-						end
-					end)
-        end,
-    })
+			end,})
 end
 
 
