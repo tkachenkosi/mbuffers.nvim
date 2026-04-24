@@ -5,7 +5,7 @@ vim.g.mm_windows = nil
 local main_buf, main_win
 local filter_buf, filter_win
 local original_lines = {}
-local max_len_buffer = 0
+local max_len_buffer = 0   -- ВАЖНО самая длинная строка в списке путей.
 local current_win
 local search_number_string = ""
 
@@ -84,7 +84,8 @@ local function highlight_path_in_filename(line, line_number)
 		})
 	end
 
-	local last_slash_pos = line:find("/[^/]*$")
+	-- local last_slash_pos = line:find("/[^/]*$")
+	local last_slash = line:match("^.*()/")
 	if last_slash_pos then
 		vim.api.nvim_buf_set_extmark(main_buf, main_ns, row, 8, {
 			end_line = row,
@@ -132,7 +133,7 @@ end
 
 local function get_open_buffers()
     original_lines = {}
-		max_len_buffer = 0   -- ВАЖНО
+		max_len_buffer = 0   -- ВАЖНО самая длинная строка в списке путей.
     local current_buf = vim.api.nvim_get_current_buf()
     local previous_buf = vim.fn.bufnr("#")
 		local root_dir = vim.fn.getcwd() .. "/"
