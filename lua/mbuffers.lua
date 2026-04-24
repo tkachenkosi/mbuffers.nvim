@@ -99,7 +99,6 @@ local function highlight_path_in_filename(line, line_number)
 	end
 end
 
-
 local function select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
 		if not buf_number then return end		-- ? рекомендация
@@ -297,95 +296,92 @@ local function update_buffer_list_filtered(filter_text)
 end
 
 local function create_filter_window()
-    filter_buf = vim.api.nvim_create_buf(false, true)
+	filter_buf = vim.api.nvim_create_buf(false, true)
 
-		vim.bo[filter_buf].buftype = "nofile"
-		vim.bo[filter_buf].bufhidden = "wipe"
-		vim.bo[filter_buf].swapfile = false
-		vim.bo[filter_buf].buflisted = false
-		vim.bo[filter_buf].modifiable = true
-		vim.bo[filter_buf].textwidth = 0
-		vim.bo[filter_buf].filetype = "text"
-		vim.bo[filter_buf].undolevels = -1
+	vim.bo[filter_buf].buftype = "nofile"
+	vim.bo[filter_buf].bufhidden = "wipe"
+	vim.bo[filter_buf].swapfile = false
+	vim.bo[filter_buf].buflisted = false
+	vim.bo[filter_buf].modifiable = true
+	vim.bo[filter_buf].textwidth = 0
+	vim.bo[filter_buf].filetype = "text"
+	vim.bo[filter_buf].undolevels = -1
 
-		local dir_project = get_dir_project()
-		vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {dir_project})
+	local dir_project = get_dir_project()
+	vim.api.nvim_buf_set_lines(filter_buf, 0, -1, false, {dir_project})
 
-    local width = 0
-		if config.width_win > 0 then
-			width = math.min(vim.o.columns - 10, config.width_win )
-		else
-			width = math.min(vim.o.columns - 10,  max_len_buffer + 10)
-		end
-    local height = 1
-    local col = math.floor((vim.o.columns - width) )
+	local width = 0
+	if config.width_win > 0 then
+		width = math.min(vim.o.columns - 10, config.width_win )
+	else
+		width = math.min(vim.o.columns - 10,  max_len_buffer + 10)
+	end
+	local height = 1
+	local col = math.floor((vim.o.columns - width) )
 
-    local wopts = {
-        relative = "editor",
-        width = width,
-        height = height,
-        row = 0,
-        col = col,
-        style = "minimal",
-				focusable = true,
-        zindex = 101,
-        border = "none",
-    }
+	local wopts = {
+			relative = "editor",
+			width = width,
+			height = height,
+			row = 0,
+			col = col,
+			style = "minimal",
+			focusable = true,
+			zindex = 101,
+			border = "none",
+	}
 
-    filter_win = vim.api.nvim_open_win(filter_buf, true, wopts)
+	filter_win = vim.api.nvim_open_win(filter_buf, true, wopts)
 
-    vim.wo[filter_win].cursorline = false
-    vim.wo[filter_win].winblend = 0
+	vim.wo[filter_win].cursorline = false
+	vim.wo[filter_win].winblend = 0
 
-		vim.api.nvim_set_hl(0, "MyRedText", {
-			bg = config.color_light_filter,      -- GUI цвет
-			ctermfg = 180,       -- Терминальный цвет
-			default = true,   -- наследовать отсутствующие атрибуты
-		})
+	vim.api.nvim_set_hl(0, "MyRedText", {
+		bg = config.color_light_filter,      -- GUI цвет
+		ctermfg = 180,       -- Терминальный цвет
+		default = true,   -- наследовать отсутствующие атрибуты
+	})
 
-		-- ns = vim.api.nvim_create_namespace("file_paths_highlights")
-		filter_ns = vim.api.nvim_create_namespace("filter_highlights")
+	-- ns = vim.api.nvim_create_namespace("file_paths_highlights")
+	filter_ns = vim.api.nvim_create_namespace("filter_highlights")
 
-		vim.api.nvim_buf_set_extmark(filter_buf, filter_ns, 0, 0, {
-				end_line = 0,
-				end_col = #dir_project,
-				hl_group = "MyRedText",
-				priority = 50,
-		})
+	vim.api.nvim_buf_set_extmark(filter_buf, filter_ns, 0, 0, {
+			end_line = 0,
+			end_col = #dir_project,
+			hl_group = "MyRedText",
+			priority = 50,
+	})
 
-		-- vim.cmd("star")
-		vim.cmd.startinsert()
+	-- vim.cmd("star")
+	vim.cmd.startinsert()
 
-		local opts = { noremap = true, silent = true, buffer = filter_buf }
-		for _, key in ipairs({ '<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>' }) do
-				vim.keymap.set('i', key, '<Nop>', opts)
-		end
-		vim.keymap.set("i", "<Esc>", function() close() end, opts)
-		vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
-		vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
+	local opts = { noremap = true, silent = true, buffer = filter_buf }
+	for _, key in ipairs({ '<F1>','<F2>','<F3>','<F4>','<F5>','<F6>','<F7>','<F8>','<F9>','<F10>','<F12>' }) do
+			vim.keymap.set('i', key, '<Nop>', opts)
+	end
+	vim.keymap.set("i", "<Esc>", function() close() end, opts)
+	vim.keymap.set("i", "<CR>", function() select_main_window() end, opts)
+	vim.keymap.set("i", "<Down>", function() select_main_window() end, opts)
 
-    vim.api.nvim_buf_attach(filter_buf, false, {
-			on_lines = function()
-				if filter_debounce_timer then
-					filter_debounce_timer:stop()
-				end
+	vim.api.nvim_buf_attach(filter_buf, false, {
+		on_lines = function()
+			if filter_debounce_timer then
+				filter_debounce_timer:stop()
+			end
 
+			filter_debounce_timer = vim.defer_fn(function()
+				local filter_text = table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), "")
+				update_buffer_list_filtered(filter_text)
+				filter_debounce_timer = nil
+			end, 150)
 
-				filter_debounce_timer = vim.defer_fn(function()
-					local filter_text = table.concat(vim.api.nvim_buf_get_lines(filter_buf, 0, -1, false), "")
-					update_buffer_list_filtered(filter_text)
-					filter_debounce_timer = nil
-				end, 350)
-
-
-			end,})
+		end,})
 end
 
 
 
 function M.setup(options)
 	config = vim.tbl_deep_extend("force", config, options or {})
-
 end
 
 function M.start()
@@ -396,9 +392,7 @@ function M.start()
 	search_number_string = ""
 	current_win = vim.api.nvim_get_current_win()
 	get_open_buffers()
-
   create_filter_window()
-
   create_main_window()
 end
 
