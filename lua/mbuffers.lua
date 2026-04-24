@@ -95,6 +95,7 @@ end
 
 local function select_buffer()
 		local buf_number = tonumber(string.sub(vim.api.nvim_get_current_line(), 2, 4))
+		if not buf_number then return end		-- ? рекомендация
 		safe_close()
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
 		if current_win and vim.api.nvim_win_is_valid(current_win) then
@@ -138,7 +139,8 @@ local function get_open_buffers()
             local file_name = string.gsub(string.gsub(vim.api.nvim_buf_get_name(buf), root_dir, "", 1), config.home_dir, "", 1)
 
             local buf_number = vim.api.nvim_buf_get_number(buf) -- Номер буфера
-						local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
+						-- local is_modified = vim.api.nvim_buf_get_option(buf, "modified")
+						local is_modified = vim.bo[buf].modified
 						max_len_buffer = math.max(max_len_buffer, string.len(file_name))
 
             local attributes = {}
