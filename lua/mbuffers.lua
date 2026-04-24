@@ -105,8 +105,7 @@ local function select_buffer()
 		if not buf_number then return end		-- ? рекомендация
 		safe_close()
 		vim.api.nvim_win_set_buf(current_win, vim.fn.bufnr(buf_number))
-		if current_win and vim.api.nvim_win_is_valid(currlocal filter_debounce_timer = nil
-local is_filtering = falseent_win) then
+		if current_win and vim.api.nvim_win_is_valid(current_win) then
 			vim.api.nvim_set_current_win(current_win)
 		end
 end
