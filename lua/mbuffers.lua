@@ -7,7 +7,7 @@ local filter_buf, filter_win
 local original_lines = {}
 local max_len_buffer = 0   -- ВАЖНО самая длинная строка в списке путей.
 local current_win
-local search_number_string = ""
+local search_num_buf = ""
 
 -- для плавного фильтра
 local filter_debounce_timer = nil
@@ -27,23 +27,24 @@ local config = {
 -- local ns
 
 local function select_first_line()
-	search_number_string = ""
+	search_num_buf = ""
 	vim.api.nvim_win_set_cursor(0, { 1, 0 })
 end
 
 local function select_last_line()
-	search_number_string = ""
+	search_num_buf = ""
 	vim.api.nvim_win_set_cursor(0, { vim.api.nvim_buf_line_count(0), 0 })
 end
 
-local function n_number_pressed_find_line(key)
-	search_number_string = search_number_string .. key
+-- поиск буфера по номеру
+local function number_pressed_find_line(key)
+	search_num_buf = search_num_buf .. key
 
-	if #search_number_string > 3 then
-		search_number_string = key
+	if #search_num_buf > 3 then
+		search_num_buf = key
 	end
 
-  local num_line = vim.fn.search(search_number_string, 'n')
+  local num_line = vim.fn.search(search_num_buf, 'n')
 
   if num_line > 0 then
     vim.api.nvim_win_set_cursor(0, { num_line, 0 })
@@ -257,7 +258,7 @@ local function create_main_window()
 
 
 		for i = 0, 9 do
-			vim.keymap.set("n", tostring(i), function() n_number_pressed_find_line(i) end, opts)
+			vim.keymap.set("n", tostring(i), function() number_pressed_find_line(i) end, opts)
 		end
 end
 
@@ -389,7 +390,7 @@ function M.start()
 		return
 	end
 	vim.g.mm_windows = 1
-	search_number_string = ""
+	search_num_buf = ""
 	current_win = vim.api.nvim_get_current_win()
 	get_open_buffers()
   create_filter_window()
