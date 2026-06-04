@@ -1,7 +1,7 @@
-### A minimalistic and highly-efficient buffer manager for the Neovim editor.
+## A minimalistic and highly-efficient buffer manager for the Neovim editor.
 ---
-#### Installation and Usage:
-```
+### Installation and Usage:
+```lua
 vim.keymap.set({'n', 'i'}, '<F12>', function() require('mbuffers').start(); end)
 
 
@@ -38,3 +38,9 @@ Esc         - close the buffer manager window
 
 CR, Down    - go to the buffer list window
 
+
+### License
+MIT License
+
+### Contributing
+Contributions are welcome! Please submit pull requests or create issues for bugs and feature requests.
