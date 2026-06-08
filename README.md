@@ -1,5 +1,7 @@
 ## A minimalistic and highly-efficient buffer manager for the Neovim editor.
----
+
+<img src="doc/view.png" alt="Screenshot" width="80%">
+
 ### Installation and Usage:
 ```lua
 vim.keymap.set({'n', 'i'}, '<F12>', function() require('mbuffers').start(); end)
